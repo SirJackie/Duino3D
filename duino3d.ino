@@ -277,13 +277,13 @@ struct Mesh2D{
 //  return ctx;
 //}
 //
-//function CanvasDrawVector2D(ctx, vector){
-//  ctx.fillStyle   = "#000000";
-//  ctx.fillRect(vector.x-3, //Start X Position
-//         vector.y-3, //Start Y Position
-//         6,          //Width
-//         6);         //Height
-//}
+void CanvasDrawVector2D(struct Vector2D* vector){
+  LcdFill(vector->x-3, //Start X Position
+          vector->y-3, //Start Y Position
+          6,          //Width
+          6,          //Height
+          RGB(0,0,0));
+}
 //
 //function CanvasDrawMesh2D(ctx, mesh, color){
 //  if(mesh.vec1.x == -1 || mesh.vec2.x == -1 || mesh.vec3.x == -1){
@@ -386,10 +386,11 @@ struct Mesh2D{
 
 void setup() {
   // put your setup code here, to run once:
-//  LcdInit();
-//  LcdFill(0,0,239,319,RGB(255,255,255));
+  LcdInit();
+  LcdFill(0,0,239,319,RGB(255,255,255));
   Serial.begin(9600);
-  Mesh2D m1(new Vector2D(0,0),new Vector2D(0,0),new Vector2D(0,0));
+  Vector2D* vec = new Vector2D(10,10);
+  CanvasDrawVector2D(vec);
 }
 
 void loop() {
