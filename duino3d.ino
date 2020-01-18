@@ -134,14 +134,26 @@ void showMatrix4X4(Matrix4X4* m){
   Serial.print("\n");
 }
 
-//function Matrix4X1timesMatrix4X4(a, b){
-//  var m00 = (a.m00 * b.m00) + (a.m01*b.m10) + (a.m02*b.m20) + (a.m03*b.m30);
-//  var m01 = (a.m00 * b.m01) + (a.m01*b.m11) + (a.m02*b.m21) + (a.m03*b.m31);
-//  var m02 = (a.m00 * b.m02) + (a.m01*b.m12) + (a.m02*b.m22) + (a.m03*b.m32);
-//  var m03 = (a.m00 * b.m03) + (a.m01*b.m13) + (a.m02*b.m23) + (a.m03*b.m33);
-//
-//  return new Matrix4X1(m00, m01, m02, m03);
-//}
+Matrix4X1* Matrix4X1timesMatrix4X4(Matrix4X1* a, Matrix4X4* b){
+  float m00 = (a->m00 * b->m00) + (a->m01*b->m10) + (a->m02*b->m20) + (a->m03*b->m30);
+  float m01 = (a->m00 * b->m01) + (a->m01*b->m11) + (a->m02*b->m21) + (a->m03*b->m31);
+  float m02 = (a->m00 * b->m02) + (a->m01*b->m12) + (a->m02*b->m22) + (a->m03*b->m32);
+  float m03 = (a->m00 * b->m03) + (a->m01*b->m13) + (a->m02*b->m23) + (a->m03*b->m33);
+
+  return new Matrix4X1(m00, m01, m02, m03);
+}
+
+void showMatrix4X1(Matrix4X1* m){
+  Serial.print("[");
+  Serial.print(m->m00);
+  Serial.print(",");
+  Serial.print(m->m01);
+  Serial.print(",");
+  Serial.print(m->m02);
+  Serial.print(",");
+  Serial.print(m->m03);
+  Serial.print("]\n");
+}
 //
 //function cosd(x){
 //  return Math.cos(x * 0.017453293);
@@ -381,8 +393,11 @@ void setup() {
                                0,1,0,0,
                                0,0,1,0,
                                0,0,0,1);
-  Matrix4X4* one = Matrix4X4timesMatrix4X4(m,m);
-  showMatrix4X4(one);
+//  Matrix4X4* one = Matrix4X4timesMatrix4X4(m,m);
+//  showMatrix4X4(one);
+  Matrix4X1* m2 = new Matrix4X1(1,1,1,1);
+  Matrix4X1* m3 = Matrix4X1timesMatrix4X4(m2,m);
+  showMatrix4X1(m3);
 }
 
 void loop() {
