@@ -1,5 +1,10 @@
 #include "Duino9341.h"
-
+#define cosd(x) cos(x*0.017453293)
+#define sind(x) sin(x*0.017453293)
+#define tand(x) tan(x*0.017453293)
+#define acosd(x) acos(x*0.017453293)
+#define asind(x) asin(x*0.017453293)
+#define atand(x) atan(x*0.017453293)
 /*
 ** Calculation Structs
 */
@@ -154,31 +159,7 @@ void showMatrix4X1(Matrix4X1* m){
   Serial.print(m->m03);
   Serial.print("]\n");
 }
-//
-//function cosd(x){
-//  return Math.cos(x * 0.017453293);
-//}
-//
-//function sind(x){
-//  return Math.sin(x * 0.017453293);
-//}
-//
-//function tand(x){
-//  return Math.tan(x * 0.017453293);
-//}
-//
-//function acosd(x){
-//  return Math.acos(x * 0.017453293);
-//}
-//
-//function asind(x){
-//  return Math.asin(x * 0.017453293);
-//}
-//
-//function atand(x){
-//  return Math.atan(x * 0.017453293);
-//}
-//
+
 ///*
 //** Structs
 //*/
@@ -389,15 +370,7 @@ void setup() {
 //  LcdInit();
 //  LcdFill(0,0,239,319,RGB(255,255,255));
   Serial.begin(9600);
-  Matrix4X4* m = new Matrix4X4(1,0,0,0,
-                               0,1,0,0,
-                               0,0,1,0,
-                               0,0,0,1);
-//  Matrix4X4* one = Matrix4X4timesMatrix4X4(m,m);
-//  showMatrix4X4(one);
-  Matrix4X1* m2 = new Matrix4X1(1,1,1,1);
-  Matrix4X1* m3 = Matrix4X1timesMatrix4X4(m2,m);
-  showMatrix4X1(m3);
+  Serial.println(sind(30));
 }
 
 void loop() {
