@@ -229,27 +229,37 @@ struct Mesh2D{
 //function World2D(){
 //  this.meshlist = [];
 //}
-//
-//function Vector4D(x,y,z){
-//  this.x = x;
-//  this.y = y;
-//  this.z = z;
-//  this.w = 1;
-//}
-//
-//function Mesh4D(vec1,vec2,vec3){
-//  this.vec1 = vec1;
-//  this.vec2 = vec2;
-//  this.vec3 = vec3;
-//}
-//
+
+struct Vector4D{
+  float x;
+  float y;
+  float z;
+  float w = 1;
+  Vector4D(float x,float y,float z){
+    this->x = x;
+    this->y = y;
+    this->z = z;
+  }
+};
+
+struct Mesh4D{
+  Vector4D* vec1;
+  Vector4D* vec2;
+  Vector4D* vec3;
+  Mesh4D(Vector4D* vec1, Vector4D* vec2, Vector4D* vec3){
+    this->vec1 = vec1;
+    this->vec2 = vec2;
+    this->vec3 = vec3;
+  }
+};
+
 //function Object4D(meshlist){
-//  this.meshlist = meshlist;
+//  this->meshlist = meshlist;
 //}
-//
+
 //function World4D(){
-//  this.meshlist = [];
-//  this.PlaceObject4D = function(newObject,x,y,z){
+//  this->meshlist = [];
+//  this->PlaceObject4D = function(newObject,x,y,z){
 //    for(var i = 0; i < newObject.meshlist.length; i++){
 //      this.meshlist.push(new Mesh4D(new Vector4D(newObject.meshlist[i].vec1.x + x,
 //                             newObject.meshlist[i].vec1.y + y,
@@ -264,7 +274,6 @@ struct Mesh2D{
 //    this.meshlist.push();
 //  }
 //}
-//
 
 /*
 ** Canvas Functions
