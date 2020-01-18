@@ -206,17 +206,26 @@ struct Camera{
 };
 
 
-//function Vector2D(x,y){
-//  this.x = x;
-//  this.y = y;
-//}
-//
-//function Mesh2D(vec1,vec2,vec3){
-//  this.vec1 = vec1;
-//  this.vec2 = vec2;
-//  this.vec3 = vec3;
-//}
-//
+struct Vector2D{
+  int x;
+  int y;
+  Vector2D(int x, int y){
+    this->x = x;
+    this->y = y;
+  }
+};
+
+struct Mesh2D{
+  Vector2D* vec1;
+  Vector2D* vec2;
+  Vector2D* vec3;
+  Mesh2D(Vector2D* vec1, Vector2D* vec2, Vector2D* vec3){
+    this->vec1 = vec1;
+    this->vec2 = vec2;
+    this->vec3 = vec3;
+  }
+};
+
 //function World2D(){
 //  this.meshlist = [];
 //}
@@ -380,9 +389,7 @@ void setup() {
 //  LcdInit();
 //  LcdFill(0,0,239,319,RGB(255,255,255));
   Serial.begin(9600);
-  Camera cam1(0,0,0,30,0,0,240,320);
-  cam1.refreshRotationMatrix();
-  showMatrix4X4(cam1.rotationMatrix);
+  Mesh2D m1(new Vector2D(0,0),new Vector2D(0,0),new Vector2D(0,0));
 }
 
 void loop() {
