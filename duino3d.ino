@@ -265,18 +265,11 @@ struct Mesh2D{
 //  }
 //}
 //
-///*
-//** Canvas Functions
-//*/
-//
-//function CanvasInit(canvasID, width, height){
-//  var canvas    = document.getElementById(canvasID);
-//  var ctx       = canvas.getContext("2d");
-//  canvas.width  = width;
-//  canvas.height = height;
-//  return ctx;
-//}
-//
+
+/*
+** Canvas Functions
+*/
+
 void CanvasDrawVector2D(struct Vector2D* vector){
   LcdFill(vector->x-3, //Start X Position
           vector->y-3, //Start Y Position
@@ -284,27 +277,20 @@ void CanvasDrawVector2D(struct Vector2D* vector){
           6,          //Height
           RGB(0,0,0));
 }
-//
-//function CanvasDrawMesh2D(ctx, mesh, color){
-//  if(mesh.vec1.x == -1 || mesh.vec2.x == -1 || mesh.vec3.x == -1){
-//    return; //don't show this vector
-//  }
-//  CanvasDrawVector2D(ctx, mesh.vec1);
-//  CanvasDrawVector2D(ctx, mesh.vec2);
-//  CanvasDrawVector2D(ctx, mesh.vec3);
-//
-//  ctx.fillStyle   = "rgba(0,144,255,0.5)";
-//  ctx.strokeStyle = "#000000";
-//  ctx.beginPath();
-//  ctx.moveTo(mesh.vec1.x, mesh.vec1.y);
-//  ctx.lineTo(mesh.vec2.x, mesh.vec2.y);
-//  ctx.lineTo(mesh.vec3.x, mesh.vec3.y);
-//  ctx.lineTo(mesh.vec1.x, mesh.vec1.y);
-//  ctx.fill();
-//  ctx.stroke();
-//  ctx.closePath();
-//}
-//
+
+void CanvasDrawMesh2D(struct Mesh2D* mesh){
+  if(mesh->vec1->x == -1 || mesh->vec2->x == -1 || mesh->vec3->x == -1){
+    return; //don't show this vector
+  }
+  CanvasDrawVector2D(mesh->vec1);
+  CanvasDrawVector2D(mesh->vec2);
+  CanvasDrawVector2D(mesh->vec3);
+
+  LcdDrawLine(mesh->vec1->x, mesh->vec1->y, mesh->vec2->x, mesh->vec2->y, RGB(0,0,0));
+  LcdDrawLine(mesh->vec2->x, mesh->vec2->y, mesh->vec3->x, mesh->vec3->y, RGB(0,0,0));
+  LcdDrawLine(mesh->vec3->x, mesh->vec3->y, mesh->vec1->x, mesh->vec1->y, RGB(0,0,0));
+}
+
 //function CanvasDrawWorld2D(ctx, world, color){
 //  for(var i = 0; i < world.meshlist.length; i++){
 //    CanvasDrawMesh2D(ctx, world.meshlist[i], color);
@@ -389,8 +375,8 @@ void setup() {
   LcdInit();
   LcdFill(0,0,239,319,RGB(255,255,255));
   Serial.begin(9600);
-  Vector2D* vec = new Vector2D(10,10);
-  CanvasDrawVector2D(vec);
+  Mesh2D* mesh = new Mesh2D(new Vector2D(10,10), new Vector2D(110,10), new Vector2D(10,110));
+  CanvasDrawMesh2D(mesh);
 }
 
 void loop() {
