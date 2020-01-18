@@ -160,42 +160,52 @@ void showMatrix4X1(Matrix4X1* m){
   Serial.print("]\n");
 }
 
-///*
-//** Structs
-//*/
-//
-//function Camera(positionX, positionY, positionZ, angleX, angleY, angleZ, screenWidth, screenHeight){
-//  this.x              = positionX;
-//  this.y              = positionY;
-//  this.z              = positionZ;
-//  this.angleX         = angleX;
-//  this.angleY         = angleY;
-//  this.angleZ         = angleZ;
-//  this.screenWidth    = screenWidth;
-//  this.screenHeight   = screenHeight;
-//  this.rotationMatrix = null;
-//
-//  this.refreshRotationMatrix = function(){
-//    var ZRotationMatrix = new Matrix4X4(cosd(this.angleZ),      sind(this.angleZ),     0,                        0,
-//                      -1*sind(this.angleZ),   cosd(this.angleZ),     0,                        0,
-//                      0,                        0,                       1,                        0,
-//                      0,                        0,                       0,                        1);
-//
-//    var YRotationMatrix = new Matrix4X4(cosd(this.angleY),      0,                       -1*sind(this.angleY),   0,
-//                      0,                        1,                       0,                        0,
-//                      sind(this.angleY),      0,                       cosd(this.angleY),      0,
-//                      0,                        0,                       0,                        1);
-//
-//    var XRotationMatrix = new Matrix4X4(1,                        0,                       0,                        0,
-//                      0,                        cosd(this.angleX),     sind(this.angleX),      0,
-//                      0,                        -1*sind(this.angleX),  cosd(this.angleX),      0,
-//                      0,                        0,                       0,                        1);
-//    
-//    this.rotationMatrix = Matrix4X4timesMatrix4X4(Matrix4X4timesMatrix4X4(ZRotationMatrix, YRotationMatrix), XRotationMatrix);
-//  }
-//  
-//}
-//
+/*
+** Structs
+*/
+
+struct Camera{
+  float x;
+  float y;
+  float z;
+  float angleX;
+  float angleY;
+  float angleZ;
+  float screenWidth;
+  float screenHeight;
+  Matrix4X4* rotationMatrix;
+  
+  Camera(float positionX, float positionY, float positionZ, float angleX, float angleY, float angleZ, float screenWidth, float screenHeight){
+    this->x              = positionX;
+    this->y              = positionY;
+    this->z              = positionZ;
+    this->angleX         = angleX;
+    this->angleY         = angleY;
+    this->angleZ         = angleZ;
+    this->screenWidth    = screenWidth;
+    this->screenHeight   = screenHeight;
+  }
+  void refreshRotationMatrix(){
+      Matrix4X4* ZRotationMatrix = new Matrix4X4(cosd(this->angleZ),      sind(this->angleZ),     0,                        0,
+                                                 -1*sind(this->angleZ),   cosd(this->angleZ),     0,                        0,
+                                                 0,                        0,                       1,                        0,
+                                                 0,                        0,                       0,                        1);
+  
+      Matrix4X4* YRotationMatrix = new Matrix4X4(cosd(this->angleY),      0,                       -1*sind(this->angleY),   0,
+                                                 0,                        1,                       0,                        0,
+                                                 sind(this->angleY),      0,                       cosd(this->angleY),      0,
+                                                 0,                        0,                       0,                        1);
+  
+      Matrix4X4* XRotationMatrix = new Matrix4X4(1,                        0,                       0,                        0,
+                                                 0,                        cosd(this->angleX),     sind(this->angleX),      0,
+                                                 0,                        -1*sind(this->angleX),  cosd(this->angleX),      0,
+                                                 0,                        0,                       0,                        1);
+      
+      this->rotationMatrix = Matrix4X4timesMatrix4X4(Matrix4X4timesMatrix4X4(ZRotationMatrix, YRotationMatrix), XRotationMatrix);
+    }
+};
+
+
 //function Vector2D(x,y){
 //  this.x = x;
 //  this.y = y;
@@ -370,7 +380,9 @@ void setup() {
 //  LcdInit();
 //  LcdFill(0,0,239,319,RGB(255,255,255));
   Serial.begin(9600);
-  Serial.println(sind(30));
+  Camera cam1(0,0,0,30,0,0,240,320);
+  cam1.refreshRotationMatrix();
+  showMatrix4X4(cam1.rotationMatrix);
 }
 
 void loop() {
