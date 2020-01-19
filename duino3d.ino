@@ -238,9 +238,17 @@ struct Mesh2D{
   }
 };
 
-//function World2D(){
-//  this.meshlist = [];
-//}
+struct World2D{
+  Mesh2D** meshlist;
+  int listlen;
+  World2D(int listlen){
+    this->meshlist = new Mesh2D* [listlen];
+    this->listlen = listlen;
+  }
+  ~World2D(){
+    delete [] this->meshlist;
+  }
+};
 
 struct Vector4D{
   float x;
@@ -270,32 +278,44 @@ struct Mesh4D{
   }
 };
 struct Object4D{
-  Mesh4D** meshlistfront;
-  Object4D(Mesh4D** meshlistfront){
-    this->meshlistfront = meshlistfront;
+  Mesh4D** meshlist;
+  int listlen;
+  Object4D(Mesh4D** meshlist, int listlen){
+    this->meshlist = meshlist;
+    this->listlen = listlen;
   }
   ~Object4D(){
-    delete [] meshlistfront;
+    delete [] meshlist;
   }
 };
 
-//function World4D(){
-//  this->meshlist = [];
-//  this->PlaceObject4D = function(newObject,x,y,z){
-//    for(var i = 0; i < newObject.meshlist.length; i++){
-//      this.meshlist.push(new Mesh4D(new Vector4D(newObject.meshlist[i].vec1.x + x,
-//                             newObject.meshlist[i].vec1.y + y,
-//                             newObject.meshlist[i].vec1.z + z,),
-//                      new Vector4D(newObject.meshlist[i].vec2.x + x,
-//                             newObject.meshlist[i].vec2.y + y,
-//                             newObject.meshlist[i].vec2.z + z,),
-//                      new Vector4D(newObject.meshlist[i].vec3.x + x,
-//                             newObject.meshlist[i].vec3.y + y,
-//                             newObject.meshlist[i].vec3.z + z,)));
-//    }
-//    this.meshlist.push();
-//  }
-//}
+struct World4D{
+  Mesh4D** meshlist;
+  int listlen;
+  int listcounter = 0;
+  World4D(int listlen){
+    this->meshlist = new Mesh4D* [listlen];
+    this->listlen = listlen;
+  }
+  ~World4D(){
+    delete [] this->meshlist;
+  }
+  void PlaceObject4D(Object4D* newObject,float x,float y,float z){
+    for(int i = 0; i < newObject->listlen; i++){
+      this->meshlist[listcounter] = new Mesh4D(new Vector4D(newObject->meshlist[i]->vec1->x + x,
+                                                            newObject->meshlist[i]->vec1->y + y,
+                                                            newObject->meshlist[i]->vec1->z + z),
+                                               new Vector4D(newObject->meshlist[i]->vec2->x + x,
+                                                            newObject->meshlist[i]->vec2->y + y,
+                                                            newObject->meshlist[i]->vec2->z + z),
+                                               new Vector4D(newObject->meshlist[i]->vec3->x + x,
+                                                            newObject->meshlist[i]->vec3->y + y,
+                                                            newObject->meshlist[i]->vec3->z + z));
+      this->listcounter += 1;
+    }
+  }
+};
+  
 
 /*
 ** Canvas Functions
@@ -449,7 +469,10 @@ void loop() {
   meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
   meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
   meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
-  Object4D* obj1 = new Object4D(meshlist);
+  Object4D* obj1 = new Object4D(meshlist, 12);
+  World4D* world4d1 = new World4D(12);
+  world4d1->PlaceObject4D(obj1,3,3,3);
   delete obj1;
+  delete(world4d1);
   Serial.println("meshlist!");
 }
