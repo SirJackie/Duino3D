@@ -201,7 +201,14 @@ struct Camera{
                                                  0,                        -1*sind(this->angleX),  cosd(this->angleX),      0,
                                                  0,                        0,                       0,                        1);
       
-      this->rotationMatrix = Matrix4X4timesMatrix4X4(Matrix4X4timesMatrix4X4(ZRotationMatrix, YRotationMatrix), XRotationMatrix);
+      delete this->rotationMatrix;
+      Matrix4X4* ZYMatrix  = Matrix4X4timesMatrix4X4(ZRotationMatrix, YRotationMatrix);
+      Matrix4X4* ZYXMatrix = Matrix4X4timesMatrix4X4(ZYMatrix, XRotationMatrix);
+      this->rotationMatrix = ZYXMatrix;
+      delete ZRotationMatrix;
+      delete YRotationMatrix;
+      delete XRotationMatrix;
+      delete ZYMatrix;
     }
 };
 
@@ -378,7 +385,7 @@ void CanvasDrawMesh2D(struct Mesh2D* mesh){
 //    requestAnimationFrame(main);
 //  });
 //}
-
+Camera* cam1;
 void setup() {
   // put your setup code here, to run once:
   LcdInit();
@@ -386,9 +393,11 @@ void setup() {
   Serial.begin(9600);
   Mesh2D* mesh = new Mesh2D(new Vector2D(10,10), new Vector2D(110,10), new Vector2D(10,110));
   CanvasDrawMesh2D(mesh);
+  cam1 = new Camera(0,0,0,30,0,0,240,320);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+  cam1->refreshRotationMatrix();
+  showMatrix4X4(cam1->rotationMatrix);
 }
