@@ -474,9 +474,10 @@ void loop() {
 //  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
 //  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
   Object4D* obj1 = new Object4D(meshlist, 2);
-  World4D* world4d1 = new World4D(2);
-  world4d1->PlaceObject4D(obj1,3,3,3);
+//  World4D* world4d1 = new World4D(2);
+//  world4d1->PlaceObject4D(obj1,3,3,3);
+  Serial.println(obj1->meshlist[0]->vec1->x);
   delete obj1;
-  delete world4d1;
+//  delete world4d1;
   Serial.println("meshlist!");
 }
