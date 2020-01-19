@@ -302,17 +302,9 @@ struct World4D{
   }
   void PlaceObject4D(Object4D* newObject,float x,float y,float z){
     for(int i = 0; i < newObject->listlen; i++){
-      this->meshlist[listcounter] = new Mesh4D(new Vector4D(newObject->meshlist[i]->vec1->x + x,
-                                                            newObject->meshlist[i]->vec1->y + y,
-                                                            newObject->meshlist[i]->vec1->z + z),
-                                               new Vector4D(newObject->meshlist[i]->vec2->x + x,
-                                                            newObject->meshlist[i]->vec2->y + y,
-                                                            newObject->meshlist[i]->vec2->z + z),
-                                               new Vector4D(newObject->meshlist[i]->vec3->x + x,
-                                                            newObject->meshlist[i]->vec3->y + y,
-                                                            newObject->meshlist[i]->vec3->z + z));
-      this->listcounter += 1;
+      this->meshlist[listcounter+i] = newObject->meshlist[i];
     }
+    this->listcounter += 1;
   }
 };
   
@@ -473,6 +465,6 @@ void loop() {
   World4D* world4d1 = new World4D(12);
   world4d1->PlaceObject4D(obj1,3,3,3);
   delete obj1;
-  delete(world4d1);
+  delete world4d1;
   Serial.println("meshlist!");
 }
