@@ -318,8 +318,8 @@ void CanvasDrawMesh2D(struct Mesh2D* mesh){
 */
 
 Vector2D* Vector4D2Vector2D(struct Camera* camera,struct Vector4D* vector){
-  float zoom  = 200;
-  float zfix  = 0.35;
+  float zoom  = 10;
+  float zfix  = 1;
   Matrix4X1* tmpCameraPositionMatrix = new Matrix4X1(vector->x - camera->x, vector->y - camera->y, vector->z - camera->z, 1);
   Matrix4X1* final = Matrix4X1timesMatrix4X4(tmpCameraPositionMatrix, camera->rotationMatrix);
   delete tmpCameraPositionMatrix;
@@ -340,12 +340,12 @@ Vector2D* Vector4D2Vector2D(struct Camera* camera,struct Vector4D* vector){
   }
 }
 
-//function Mesh4D2Mesh2D(camera,mesh4d){
-//  return new Mesh2D(Vector4D2Vector2D(camera, mesh4d.vec1),
-//            Vector4D2Vector2D(camera, mesh4d.vec2),
-//            Vector4D2Vector2D(camera, mesh4d.vec3));
-//}
-//
+Mesh2D* Mesh4D2Mesh2D(struct Camera* camera,struct Mesh4D* mesh4d){
+  return new Mesh2D(Vector4D2Vector2D(camera, mesh4d->vec1),
+                    Vector4D2Vector2D(camera, mesh4d->vec2),
+                    Vector4D2Vector2D(camera, mesh4d->vec3));
+}
+
 //function World4D2World2D(camera,world4d){
 //  var world2d = new World2D();
 //  for(var i = 0; i < world4d.meshlist.length; i++){
@@ -396,16 +396,17 @@ void setup() {
   Serial.begin(9600);
   cam1 = new Camera(0,0,0,0,0,0,240,320);
   
+  Serial.println("begin calculation");
+  cam1->refreshRotationMatrix();
+  Mesh4D* mesh4d = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1));
+  Mesh2D* mesh2d = Mesh4D2Mesh2D(cam1,mesh4d);
+  delete mesh4d;
+  CanvasDrawMesh2D(mesh2d);
+  delete mesh2d;
+  //cam1->angleX += 1;
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  Serial.println("begin calculation");
-  cam1->refreshRotationMatrix();
-  Vector4D* vec4d = new Vector4D(1,1,1);
-  Vector2D* vec2d = Vector4D2Vector2D(cam1, vec4d);
-  delete vec4d;
-  CanvasDrawVector2D(vec2d);
-  delete vec2d;
-  cam1->angleX += 1;
+  
 }
