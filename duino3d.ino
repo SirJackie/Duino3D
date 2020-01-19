@@ -312,31 +312,34 @@ void CanvasDrawMesh2D(struct Mesh2D* mesh){
 //    CanvasDrawMesh2D(ctx, world.meshlist[i], color);
 //  }
 //}
-//
-///*
-//** Projection Functions
-//*/
-//
-//function Vector4D2Vector2D(camera,vector){
-//  var zoom  = 200;
-//  var zfix  = 0.35;
-//  var final = Matrix4X1timesMatrix4X4(new Matrix4X1(vector.x - camera.x, vector.y - camera.y, vector.z - camera.z, 1), camera.rotationMatrix);
-//  var vecx  = final.m00;
-//  var vecy  = final.m01;
-//  var vecz  = final.m02;
-//
-//  if(vecz <= 0){
-//    return new Vector2D(-1,-1); //don't show this vector
-//  } else {
-//    var x2d     = (vecx) / (vecz*zfix);
-//    var y2d     = (vecy) / (vecz*zfix);
-//
-//    var xScreen = (camera.screenWidth  / 2) + (x2d * zoom);
-//    var yScreen = (camera.screenHeight / 2) + (y2d * zoom);
-//    return new Vector2D(xScreen, yScreen);
-//  }
-//}
-//
+
+/*
+** Projection Functions
+*/
+
+Vector2D* Vector4D2Vector2D(struct Camera* camera,struct Vector4D* vector){
+  float zoom  = 200;
+  float zfix  = 0.35;
+  Matrix4X1* tmpCameraPositionMatrix = new Matrix4X1(vector->x - camera->x, vector->y - camera->y, vector->z - camera->z, 1);
+  Matrix4X1* final = Matrix4X1timesMatrix4X4(tmpCameraPositionMatrix, camera->rotationMatrix);
+  delete tmpCameraPositionMatrix;
+  float vecx  = final->m00;
+  float vecy  = final->m01;
+  float vecz  = final->m02;
+  delete final;
+
+  if(vecz <= 0){
+    return new Vector2D(-1,-1); //don't show this vector
+  } else {
+    float x2d = (vecx) / (vecz*zfix);
+    float y2d = (vecy) / (vecz*zfix);
+
+    int xScreen = (camera->screenWidth  / 2) + (x2d * zoom);
+    int yScreen = (camera->screenHeight / 2) + (y2d * zoom);
+    return new Vector2D(xScreen, yScreen);
+  }
+}
+
 //function Mesh4D2Mesh2D(camera,mesh4d){
 //  return new Mesh2D(Vector4D2Vector2D(camera, mesh4d.vec1),
 //            Vector4D2Vector2D(camera, mesh4d.vec2),
@@ -391,9 +394,13 @@ void setup() {
   LcdInit();
   LcdFill(0,0,239,319,RGB(255,255,255));
   Serial.begin(9600);
-  Mesh2D* mesh = new Mesh2D(new Vector2D(10,10), new Vector2D(110,10), new Vector2D(10,110));
-  CanvasDrawMesh2D(mesh);
   cam1 = new Camera(0,0,0,30,0,0,240,320);
+  cam1->refreshRotationMatrix();
+  Vector4D* vec4d = new Vector4D(1,1,1);
+  Vector2D* vec2d = Vector4D2Vector2D(cam1, vec4d);
+  delete vec4d;
+  CanvasDrawVector2D(vec2d);
+  delete vec2d;
 }
 
 void loop() {
