@@ -270,9 +270,12 @@ struct Mesh4D{
   }
 };
 struct Object4D{
-  Mesh4D* meshlistfront;
-  Object4D(Mesh4D* meshlistfront){
+  Mesh4D** meshlistfront;
+  Object4D(Mesh4D** meshlistfront){
     this->meshlistfront = meshlistfront;
+  }
+  ~Object4D(){
+    delete [] meshlistfront;
   }
 };
 
@@ -446,6 +449,7 @@ void loop() {
   meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
   meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
   meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
-  delete [] meshlist;
+  Object4D* obj1 = new Object4D(meshlist);
+  delete obj1;
   Serial.println("meshlist!");
 }
