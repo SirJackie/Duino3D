@@ -394,17 +394,18 @@ void setup() {
   LcdInit();
   LcdFill(0,0,239,319,RGB(255,255,255));
   Serial.begin(9600);
-  cam1 = new Camera(0,0,0,30,0,0,240,320);
+  cam1 = new Camera(0,0,0,0,0,0,240,320);
+  
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  Serial.println("begin calculation");
   cam1->refreshRotationMatrix();
   Vector4D* vec4d = new Vector4D(1,1,1);
   Vector2D* vec2d = Vector4D2Vector2D(cam1, vec4d);
   delete vec4d;
   CanvasDrawVector2D(vec2d);
   delete vec2d;
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  cam1->refreshRotationMatrix();
-  showMatrix4X4(cam1->rotationMatrix);
+  cam1->angleX += 1;
 }
