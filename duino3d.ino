@@ -231,6 +231,11 @@ struct Mesh2D{
     this->vec2 = vec2;
     this->vec3 = vec3;
   }
+  ~Mesh2D(){
+    delete this->vec1;
+    delete this->vec2;
+    delete this->vec3;
+  }
 };
 
 //function World2D(){
@@ -257,6 +262,11 @@ struct Mesh4D{
     this->vec1 = vec1;
     this->vec2 = vec2;
     this->vec3 = vec3;
+  }
+  ~Mesh4D(){
+    delete this->vec1;
+    delete this->vec2;
+    delete this->vec3;
   }
 };
 
@@ -396,6 +406,11 @@ void setup() {
   Serial.begin(9600);
   cam1 = new Camera(0,0,0,0,0,0,240,320);
   
+  
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
   Serial.println("begin calculation");
   cam1->refreshRotationMatrix();
   Mesh4D* mesh4d = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1));
@@ -404,9 +419,4 @@ void setup() {
   CanvasDrawMesh2D(mesh2d);
   delete mesh2d;
   //cam1->angleX += 1;
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  
 }
