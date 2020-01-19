@@ -303,8 +303,20 @@ struct World4D{
   void PlaceObject4D(Object4D* newObject,float x,float y,float z){
     for(int i = 0; i < newObject->listlen; i++){
       this->meshlist[listcounter+i] = newObject->meshlist[i];
+      this->meshlist[listcounter+i]->vec1->x = this->meshlist[listcounter+i]->vec1->x + x;
+//      this->meshlist[listcounter+i]->vec1->y += y;
+//      this->meshlist[listcounter+i]->vec1->z += z;
+//
+//      this->meshlist[listcounter+i]->vec2->x += x;
+//      this->meshlist[listcounter+i]->vec2->y += y;
+//      this->meshlist[listcounter+i]->vec2->z += z;
+//
+//      this->meshlist[listcounter+i]->vec3->x += x;
+//      this->meshlist[listcounter+i]->vec3->y += y;
+//      this->meshlist[listcounter+i]->vec3->z += z;
     }
     this->listcounter += 1;
+    newObject = NULL;
   }
 };
   
@@ -448,21 +460,21 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  Mesh4D** meshlist = new Mesh4D* [12];
+  Mesh4D** meshlist = new Mesh4D* [2];
   meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
   meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
-  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
-  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
-  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
-  meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
-  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
-  meshlist[7] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(4,4,4), new Vector4D(4,1,4)); //back
-  meshlist[8] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(1,4,4), new Vector4D(4,4,4)); //up
-  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
-  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
-  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
-  Object4D* obj1 = new Object4D(meshlist, 12);
-  World4D* world4d1 = new World4D(12);
+//  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
+//  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
+//  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
+//  meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
+//  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
+//  meshlist[7] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(4,4,4), new Vector4D(4,1,4)); //back
+//  meshlist[8] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(1,4,4), new Vector4D(4,4,4)); //up
+//  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
+//  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
+//  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
+  Object4D* obj1 = new Object4D(meshlist, 2);
+  World4D* world4d1 = new World4D(2);
   world4d1->PlaceObject4D(obj1,3,3,3);
   delete obj1;
   delete world4d1;
