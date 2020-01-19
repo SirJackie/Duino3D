@@ -304,6 +304,14 @@ void CanvasDrawVector2D(struct Vector2D* vector){
           RGB(0,0,0));
 }
 
+void CanvasEraseVector2D(struct Vector2D* vector){
+  LcdFill(vector->x-3, //Start X Position
+          vector->y-3, //Start Y Position
+          6,          //Width
+          6,          //Height
+          RGB(255,255,255));
+}
+
 void CanvasDrawMesh2D(struct Mesh2D* mesh){
   if(mesh->vec1->x == -1 || mesh->vec2->x == -1 || mesh->vec3->x == -1){
     return; //don't show this vector
@@ -315,6 +323,19 @@ void CanvasDrawMesh2D(struct Mesh2D* mesh){
   LcdDrawLine(mesh->vec1->x, mesh->vec1->y, mesh->vec2->x, mesh->vec2->y, RGB(0,0,0));
   LcdDrawLine(mesh->vec2->x, mesh->vec2->y, mesh->vec3->x, mesh->vec3->y, RGB(0,0,0));
   LcdDrawLine(mesh->vec3->x, mesh->vec3->y, mesh->vec1->x, mesh->vec1->y, RGB(0,0,0));
+}
+
+void CanvasEraseMesh2D(struct Mesh2D* mesh){
+  if(mesh->vec1->x == -1 || mesh->vec2->x == -1 || mesh->vec3->x == -1){
+    return; //don't show this vector
+  }
+  CanvasEraseVector2D(mesh->vec1);
+  CanvasEraseVector2D(mesh->vec2);
+  CanvasEraseVector2D(mesh->vec3);
+
+  LcdDrawLine(mesh->vec1->x, mesh->vec1->y, mesh->vec2->x, mesh->vec2->y, RGB(255,255,255));
+  LcdDrawLine(mesh->vec2->x, mesh->vec2->y, mesh->vec3->x, mesh->vec3->y, RGB(255,255,255));
+  LcdDrawLine(mesh->vec3->x, mesh->vec3->y, mesh->vec1->x, mesh->vec1->y, RGB(255,255,255));
 }
 
 //function CanvasDrawWorld2D(ctx, world, color){
@@ -411,12 +432,14 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  Serial.println("begin calculation");
-  cam1->refreshRotationMatrix();
+  
   Mesh4D* mesh4d = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1));
   Mesh2D* mesh2d = Mesh4D2Mesh2D(cam1,mesh4d);
-  delete mesh4d;
   CanvasDrawMesh2D(mesh2d);
+  
+  delete mesh4d;
+  cam1->angleX += 0.1;
+  cam1->refreshRotationMatrix();
+  CanvasEraseMesh2D(mesh2d);
   delete mesh2d;
-  //cam1->angleX += 1;
 }
