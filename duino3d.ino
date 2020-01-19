@@ -269,10 +269,12 @@ struct Mesh4D{
     delete this->vec3;
   }
 };
-
-//function Object4D(meshlist){
-//  this->meshlist = meshlist;
-//}
+struct Object4D{
+  Mesh4D* meshlistfront;
+  Object4D(Mesh4D* meshlistfront){
+    this->meshlistfront = meshlistfront;
+  }
+};
 
 //function World4D(){
 //  this->meshlist = [];
@@ -420,26 +422,30 @@ Mesh2D* Mesh4D2Mesh2D(struct Camera* camera,struct Mesh4D* mesh4d){
 //  });
 //}
 Camera* cam1;
+Mesh4D* mesh4d;
 void setup() {
   // put your setup code here, to run once:
   LcdInit();
   LcdFill(0,0,239,319,RGB(255,255,255));
   Serial.begin(9600);
   cam1 = new Camera(0,0,0,0,0,0,240,320);
-  
-  
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  
-  Mesh4D* mesh4d = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1));
-  Mesh2D* mesh2d = Mesh4D2Mesh2D(cam1,mesh4d);
-  CanvasDrawMesh2D(mesh2d);
-  
-  delete mesh4d;
-  cam1->angleX += 0.1;
-  cam1->refreshRotationMatrix();
-  CanvasEraseMesh2D(mesh2d);
-  delete mesh2d;
+  Mesh4D** meshlist = new Mesh4D* [12];
+  meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
+  meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
+  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
+  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
+  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
+  meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
+  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
+  meshlist[7] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(4,4,4), new Vector4D(4,1,4)); //back
+  meshlist[8] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(1,4,4), new Vector4D(4,4,4)); //up
+  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
+  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
+  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
+  delete [] meshlist;
+  Serial.println("meshlist!");
 }
