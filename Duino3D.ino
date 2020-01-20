@@ -306,17 +306,17 @@ struct World4D{
   void PlaceObject4D(Object4D* newObject,float x,float y,float z){
     for(int i = 0; i < newObject->listlen; i++){
       this->meshlist[listcounter+i] = newObject->meshlist[i];
-      this->meshlist[listcounter+i]->vec1->x = this->meshlist[listcounter+i]->vec1->x + x;
-//      this->meshlist[listcounter+i]->vec1->y += y;
-//      this->meshlist[listcounter+i]->vec1->z += z;
-//
-//      this->meshlist[listcounter+i]->vec2->x += x;
-//      this->meshlist[listcounter+i]->vec2->y += y;
-//      this->meshlist[listcounter+i]->vec2->z += z;
-//
-//      this->meshlist[listcounter+i]->vec3->x += x;
-//      this->meshlist[listcounter+i]->vec3->y += y;
-//      this->meshlist[listcounter+i]->vec3->z += z;
+      this->meshlist[listcounter+i]->vec1->x += x;
+      this->meshlist[listcounter+i]->vec1->y += y;
+      this->meshlist[listcounter+i]->vec1->z += z;
+
+      this->meshlist[listcounter+i]->vec2->x += x;
+      this->meshlist[listcounter+i]->vec2->y += y;
+      this->meshlist[listcounter+i]->vec2->z += z;
+
+      this->meshlist[listcounter+i]->vec3->x += x;
+      this->meshlist[listcounter+i]->vec3->y += y;
+      this->meshlist[listcounter+i]->vec3->z += z;
     }
     this->listcounter += 1;
     newObject = NULL;
