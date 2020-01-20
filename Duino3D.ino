@@ -285,7 +285,10 @@ struct Object4D{
     this->listlen = listlen;
   }
   ~Object4D(){
-    delete [] this->meshlist;
+    for(int i = 0; i < listlen; i++){
+      delete this->meshlist[i];
+    }
+    delete this->meshlist;
   }
 };
 
