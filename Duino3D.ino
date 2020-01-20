@@ -462,33 +462,34 @@ void setup() {
   // put your setup code here, to run once:
   LcdInit();
   LcdFill(0,0,239,319,RGB(255,255,255));
-  Serial.begin(9600);
+//  Serial.begin(9600);
   cam1 = new Camera(0,0,0,0,0,0,240,320);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  cam1->z += 0.05;
   cam1->refreshRotationMatrix();
-  Mesh4D** meshlist = new Mesh4D* [6];
+  Mesh4D** meshlist = new Mesh4D* [4];
   meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
   meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
   meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
   meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
-  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
-  meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
+//  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
+//  meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
 //  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
 //  meshlist[7] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(4,4,4), new Vector4D(4,1,4)); //back
 //  meshlist[8] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(1,4,4), new Vector4D(4,4,4)); //up
 //  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
 //  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
 //  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
-  Object4D* obj1 = new Object4D(meshlist, 6);
-  World4D* world4d1 = new World4D(6);
-  world4d1->PlaceObject4D(obj1,-2.5,-2.5,1);
+  Object4D* obj1 = new Object4D(meshlist, 4);
+  World4D* world4d1 = new World4D(4);
+  world4d1->PlaceObject4D(obj1,0,0,0);
   delete obj1;
   World2D* world2d1 = World4D2World2D(cam1, world4d1);
   delete world4d1;
   CanvasDrawWorld2D(world2d1);
   delete world2d1;
-  Serial.println("meshlist!");
+  delay(40);
 }
