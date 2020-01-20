@@ -476,24 +476,24 @@ bool addingState = true;
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if(cam1->angleX > 30){
+  if(cam1->z >0.5){
     addingState = false;
   }
-  else if(cam1->angleX < 0){
+  else if(cam1->z < 0){
     addingState = true;
   }
   if(addingState == true){
-    cam1->angleX += 0.5;
+    cam1->z += 0.05;
   }
   else{
-    cam1->angleX -= 0.5;
+    cam1->z -= 0.05;
   }
   cam1->refreshRotationMatrix();
   Mesh4D** meshlist = new Mesh4D* [4];
   meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
   meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
-//  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
-//  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
+  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
+  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
 //  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
 //  meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
 //  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
@@ -502,10 +502,9 @@ void loop() {
 //  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
 //  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
 //  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
-  Object4D* obj1 = new Object4D(meshlist, 2);
+  Object4D* obj1 = new Object4D(meshlist, 4);
   World4D* world4d1 = new World4D(4);
   world4d1->PlaceObject4D(obj1,0,0,0);
-  world4d1->PlaceObject4D(obj1,2,0,0);
   delete obj1;
   World2D* world2d1 = World4D2World2D(cam1, world4d1);
   delete world4d1;
