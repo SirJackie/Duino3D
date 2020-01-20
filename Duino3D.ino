@@ -375,11 +375,11 @@ void CanvasEraseMesh2D(struct Mesh2D* mesh){
   LcdDrawLine(mesh->vec3->x, mesh->vec3->y, mesh->vec1->x, mesh->vec1->y, RGB(255,255,255));
 }
 
-//function CanvasDrawWorld2D(ctx, world, color){
-//  for(var i = 0; i < world.meshlist.length; i++){
-//    CanvasDrawMesh2D(ctx, world.meshlist[i], color);
-//  }
-//}
+void CanvasDrawWorld2D(struct World2D* world){
+  for(int i = 0; i < world->listlen; i++){
+    CanvasDrawMesh2D(world->meshlist[i]);
+  }
+}
 
 /*
 ** Projection Functions
@@ -414,14 +414,14 @@ Mesh2D* Mesh4D2Mesh2D(struct Camera* camera,struct Mesh4D* mesh4d){
                     Vector4D2Vector2D(camera, mesh4d->vec3));
 }
 
-//function World4D2World2D(camera,world4d){
-//  var world2d = new World2D();
-//  for(var i = 0; i < world4d.meshlist.length; i++){
-//    world2d.meshlist.push(Mesh4D2Mesh2D(camera, world4d.meshlist[i]));
-//  }
-//  return world2d;
-//}
-//
+World2D* World4D2World2D(struct Camera* camera,struct World4D* world4d){
+  World2D* world2d = new World2D(world4d->listlen);
+  for(int i = 0; i < world4d->listlen; i++){
+    world2d->meshlist[i] = Mesh4D2Mesh2D(camera, world4d->meshlist[i]);
+  }
+  return world2d;
+}
+
 //window.onload = function(){
 //  cam1 = new Camera(0, 0, -10, 0, 0, 0, document.body.clientWidth, document.body.clientHeight);//global variable,with no "var"
 //  var ctx  = CanvasInit("canvas1", cam1.screenWidth, cam1.screenHeight);
@@ -468,24 +468,27 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  Mesh4D** meshlist = new Mesh4D* [12];
+  cam1->refreshRotationMatrix();
+  Mesh4D** meshlist = new Mesh4D* [6];
   meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
   meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
   meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
   meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
   meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
   meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
-  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
-  meshlist[7] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(4,4,4), new Vector4D(4,1,4)); //back
-  meshlist[8] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(1,4,4), new Vector4D(4,4,4)); //up
-  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
-  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
-  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
-  Object4D* obj1 = new Object4D(meshlist, 12);
-  World4D* world4d1 = new World4D(12);
-  world4d1->PlaceObject4D(obj1,3,3,3);
-  Serial.println(world4d1->meshlist[0]->vec1->x);
+//  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
+//  meshlist[7] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(4,4,4), new Vector4D(4,1,4)); //back
+//  meshlist[8] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(1,4,4), new Vector4D(4,4,4)); //up
+//  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
+//  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
+//  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
+  Object4D* obj1 = new Object4D(meshlist, 6);
+  World4D* world4d1 = new World4D(6);
+  world4d1->PlaceObject4D(obj1,-2.5,-2.5,1);
   delete obj1;
+  World2D* world2d1 = World4D2World2D(cam1, world4d1);
   delete world4d1;
+  CanvasDrawWorld2D(world2d1);
+  delete world2d1;
   Serial.println("meshlist!");
 }
