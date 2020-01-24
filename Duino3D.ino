@@ -1,7 +1,5 @@
 #include ".\\Drivers\\ScreenDriver.h"
 #include ".\\Drivers\\JoystickDriver.h"
-#include ".\\Drivers\\U8g2\\U8g2lib.h"
-#include ".\\Drivers\\U8g2\\U8x8lib.h"
 #define cosd(x) cos(x*0.017453293)
 #define sind(x) sin(x*0.017453293)
 #define tand(x) tan(x*0.017453293)
