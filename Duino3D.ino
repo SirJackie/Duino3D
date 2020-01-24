@@ -511,9 +511,12 @@ void loop() {
   delete world4d1;
 
   //Draw Meshes
-  LcdBeginFrame();
-  CanvasDrawWorld2D(world2d1);
-  LcdEndFrame();
+  u8g2.firstPage();
+  do {
+//    u8g2.setFont(u8g2_font_ncenB14_tr);
+//    u8g2.drawStr(0,15,"Hello World!");
+    CanvasDrawWorld2D(world2d1);
+  } while ( u8g2.nextPage() );
   
   delay(40);
   delete world2d1;
