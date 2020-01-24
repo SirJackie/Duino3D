@@ -1,5 +1,7 @@
 #include ".\\Drivers\\ScreenDriver.h"
 #include ".\\Drivers\\JoystickDriver.h"
+#include ".\\Drivers\\U8g2\\U8g2lib.h"
+#include ".\\Drivers\\U8g2\\U8x8lib.h"
 #define cosd(x) cos(x*0.017453293)
 #define sind(x) sin(x*0.017453293)
 #define tand(x) tan(x*0.017453293)
@@ -466,7 +468,7 @@ Mesh4D* mesh4d;
 void setup() {
   // put your setup code here, to run once:
   LcdInit();
-  LcdFill(0,0,239,319);
+//  LcdFill(0,0,239,319);
 //  Serial.begin(9600);
   cam1 = new Camera(0,0,0,0,0,0,240,320);
 }
@@ -507,8 +509,12 @@ void loop() {
   delete obj1;
   World2D* world2d1 = World4D2World2D(cam1, world4d1);
   delete world4d1;
+
+  //Draw Meshes
+  LcdBeginFrame();
   CanvasDrawWorld2D(world2d1);
+  LcdEndFrame();
+  
   delay(40);
-  CanvasEraseWorld2D(world2d1);
   delete world2d1;
 }
