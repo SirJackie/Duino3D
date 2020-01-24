@@ -465,57 +465,73 @@ Camera* cam1;
 Mesh4D* mesh4d;
 void setup() {
   // put your setup code here, to run once:
+  Serial.begin(9600);
   LcdInit();
   cam1 = new Camera(0,0,0,0,0,0,128,64);
+  Serial.println("Setup begin");
+  u8g2.firstPage();
+  do {
+    u8g2.setFont(u8g2_font_ncenB14_tr);
+    u8g2.drawStr(0,15,"Setup");
+  } while ( u8g2.nextPage() );
+  delay(500);
+  Serial.println("Setup done");
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+//  // put your main code here, to run repeatedly:
+  Serial.println("Loop begin");
   short XState = getJoystickXState();
   short YState = getJoystickYState();
-  if(XState == 0 && YState == 0){
-    return;
-  }
-  if(XState == -1){
-    cam1->x -= 1;
-  }
-  else if(XState == 1){
-    cam1->x += 1;
-  }
-  if(YState == 1){
-    cam1->z -= 0.1;
-  }
-  else if(YState == -1){
-    cam1->z += 0.1;
-  }
-  cam1->refreshRotationMatrix();
-  Mesh4D** meshlist = new Mesh4D* [4];
-  meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
-  meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
-  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
-  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
-//  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
-//  meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
-//  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
-//  meshlist[7] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(4,4,4), new Vector4D(4,1,4)); //back
-//  meshlist[8] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(1,4,4), new Vector4D(4,4,4)); //up
-//  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
-//  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
-//  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
-  Object4D* obj1 = new Object4D(meshlist, 4);
-  World4D* world4d1 = new World4D(4);
-  world4d1->PlaceObject4D(obj1,0,-2.5,0);
-  delete obj1;
-  World2D* world2d1 = World4D2World2D(cam1, world4d1);
-  delete world4d1;
-
-  //Draw Meshes
+//  if(XState == 0 && YState == 0){
+//    return;
+//  }
+//  if(XState == -1){
+//    cam1->x -= 1;
+//  }
+//  else if(XState == 1){
+//    cam1->x += 1;
+//  }
+//  if(YState == 1){
+//    cam1->z -= 0.1;
+//  }
+//  else if(YState == -1){
+//    cam1->z += 0.1;
+//  }
   u8g2.firstPage();
   do {
-//    u8g2.setFont(u8g2_font_ncenB14_tr);
-//    u8g2.drawStr(0,15,"Hello World!");
-    CanvasDrawWorld2D(world2d1);
+    u8g2.setFont(u8g2_font_ncenB14_tr);
+    u8g2.drawStr(0,15,"Hello World!");
   } while ( u8g2.nextPage() );
-  
-  delete world2d1;
+//  cam1->refreshRotationMatrix();
+//  Mesh4D** meshlist = new Mesh4D* [4];
+//  meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
+//  meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
+//  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
+//  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
+////  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
+////  meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
+////  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
+////  meshlist[7] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(4,4,4), new Vector4D(4,1,4)); //back
+////  meshlist[8] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(1,4,4), new Vector4D(4,4,4)); //up
+////  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
+////  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
+////  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
+//  Object4D* obj1 = new Object4D(meshlist, 4);
+//  World4D* world4d1 = new World4D(4);
+//  world4d1->PlaceObject4D(obj1,0,-2.5,0);
+//  delete obj1;
+//  World2D* world2d1 = World4D2World2D(cam1, world4d1);
+//  delete world4d1;
+//
+//  //Draw Meshes
+//  u8g2.firstPage();
+//  do {
+////    u8g2.setFont(u8g2_font_ncenB14_tr);
+////    u8g2.drawStr(0,15,"Hello World!");
+//    CanvasDrawWorld2D(world2d1);
+//  } while ( u8g2.nextPage() );
+//  
+//  delete world2d1;
+  Serial.println("Loop Done");
 }
