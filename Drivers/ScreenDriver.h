@@ -8,10 +8,10 @@ void LcdInit(void){
     ;
 }
 
-void LcdFill(int x,int y,int width,int height,unsigned int color){
+void LcdFill(int x, int y, int width, int height){
     ;
 }
 
-void LcdDrawLine(int x1, int y1, int x2, int y2, unsigned int color){
+void LcdDrawLine(int x1, int y1, int x2, int y2){
     ;
 }

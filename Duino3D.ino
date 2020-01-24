@@ -338,16 +338,14 @@ void CanvasDrawVector2D(struct Vector2D* vector){
   LcdFill(vector->x-3, //Start X Position
           vector->y-3, //Start Y Position
           6,          //Width
-          6,          //Height
-          RGB(0,0,0));
+          6);         //Height
 }
 
 void CanvasEraseVector2D(struct Vector2D* vector){
   LcdFill(vector->x-3, //Start X Position
           vector->y-3, //Start Y Position
           6,          //Width
-          6,          //Height
-          RGB(255,255,255));
+          6);         //Height
 }
 
 void CanvasDrawMesh2D(struct Mesh2D* mesh){
@@ -358,9 +356,9 @@ void CanvasDrawMesh2D(struct Mesh2D* mesh){
   CanvasDrawVector2D(mesh->vec2);
   CanvasDrawVector2D(mesh->vec3);
 
-  LcdDrawLine(mesh->vec1->x, mesh->vec1->y, mesh->vec2->x, mesh->vec2->y, RGB(0,0,0));
-  LcdDrawLine(mesh->vec2->x, mesh->vec2->y, mesh->vec3->x, mesh->vec3->y, RGB(0,0,0));
-  LcdDrawLine(mesh->vec3->x, mesh->vec3->y, mesh->vec1->x, mesh->vec1->y, RGB(0,0,0));
+  LcdDrawLine(mesh->vec1->x, mesh->vec1->y, mesh->vec2->x, mesh->vec2->y);
+  LcdDrawLine(mesh->vec2->x, mesh->vec2->y, mesh->vec3->x, mesh->vec3->y);
+  LcdDrawLine(mesh->vec3->x, mesh->vec3->y, mesh->vec1->x, mesh->vec1->y);
 }
 
 void CanvasEraseMesh2D(struct Mesh2D* mesh){
@@ -371,9 +369,9 @@ void CanvasEraseMesh2D(struct Mesh2D* mesh){
   CanvasEraseVector2D(mesh->vec2);
   CanvasEraseVector2D(mesh->vec3);
 
-  LcdDrawLine(mesh->vec1->x, mesh->vec1->y, mesh->vec2->x, mesh->vec2->y, RGB(255,255,255));
-  LcdDrawLine(mesh->vec2->x, mesh->vec2->y, mesh->vec3->x, mesh->vec3->y, RGB(255,255,255));
-  LcdDrawLine(mesh->vec3->x, mesh->vec3->y, mesh->vec1->x, mesh->vec1->y, RGB(255,255,255));
+  LcdDrawLine(mesh->vec1->x, mesh->vec1->y, mesh->vec2->x, mesh->vec2->y);
+  LcdDrawLine(mesh->vec2->x, mesh->vec2->y, mesh->vec3->x, mesh->vec3->y);
+  LcdDrawLine(mesh->vec3->x, mesh->vec3->y, mesh->vec1->x, mesh->vec1->y);
 }
 
 void CanvasDrawWorld2D(struct World2D* world){
@@ -468,7 +466,7 @@ Mesh4D* mesh4d;
 void setup() {
   // put your setup code here, to run once:
   LcdInit();
-  LcdFill(0,0,239,319,RGB(255,255,255));
+  LcdFill(0,0,239,319);
 //  Serial.begin(9600);
   cam1 = new Camera(0,0,0,0,0,0,240,320);
 }
