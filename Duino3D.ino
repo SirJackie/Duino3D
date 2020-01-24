@@ -473,21 +473,21 @@ void setup() {
   cam1 = new Camera(0,0,0,0,0,0,128,64);
 }
 
-bool addingState = true;
-
 void loop() {
   // put your main code here, to run repeatedly:
-  if(cam1->z >0.5){
-    addingState = false;
+  short XState = getJoystickXState();
+  short YState = getJoystickYState();
+  if(XState == -1){
+    cam1->x -= 1;
   }
-  else if(cam1->z < 0){
-    addingState = true;
+  else if(XState == 1){
+    cam1->x += 1;
   }
-  if(addingState == true){
-    cam1->z += 0.05;
+  if(YState == 1){
+    cam1->z -= 0.1;
   }
-  else{
-    cam1->z -= 0.05;
+  else if(YState == -1){
+    cam1->z += 0.1;
   }
   cam1->refreshRotationMatrix();
   Mesh4D** meshlist = new Mesh4D* [4];
@@ -505,7 +505,7 @@ void loop() {
 //  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
   Object4D* obj1 = new Object4D(meshlist, 4);
   World4D* world4d1 = new World4D(4);
-  world4d1->PlaceObject4D(obj1,0,0,0);
+  world4d1->PlaceObject4D(obj1,0,-2.5,0);
   delete obj1;
   World2D* world2d1 = World4D2World2D(cam1, world4d1);
   delete world4d1;
