@@ -533,11 +533,11 @@ void loop() {
   cam1->refreshRotationMatrix();
 //  Serial.println("2");
 //  Serial.println(getFreeMemory());
-  Mesh4D** meshlist = new Mesh4D* [4];
+  Mesh4D** meshlist = new Mesh4D* [1];
   meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
-  meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
-  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
-  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
+//  meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
+//  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
+//  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
 //  Serial.println("3");
 //  Serial.println(getFreeMemory());
 //  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
@@ -548,10 +548,10 @@ void loop() {
 //  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
 //  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
 //  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
-  Object4D* obj1 = new Object4D(meshlist, 4);
+  Object4D* obj1 = new Object4D(meshlist, 1);
 //  Serial.println("4");
 //  Serial.println(getFreeMemory());
-  World4D* world4d1 = new World4D(4);
+  World4D* world4d1 = new World4D(1);
 //  Serial.println("5");
 //  Serial.println(getFreeMemory());
   world4d1->PlaceObject4D(obj1,0,-2.5,0);
