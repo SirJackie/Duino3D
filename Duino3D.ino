@@ -338,17 +338,17 @@ void CanvasDrawVector2D(struct Vector2D* vector){
   Serial.println(vector->x);
   Serial.println(vector->y);
   Serial.println("\n");
-  LcdFill(vector->x-3, //Start X Position
-          vector->y-3, //Start Y Position
-          6,          //Width
-          6);         //Height
+  LcdFill(vector->x-1, //Start X Position
+          vector->y-1, //Start Y Position
+          2,          //Width
+          2);         //Height
 }
 
 void CanvasEraseVector2D(struct Vector2D* vector){
-  LcdFill(vector->x-3, //Start X Position
-          vector->y-3, //Start Y Position
-          6,          //Width
-          6);         //Height
+  LcdFill(vector->x-1, //Start X Position
+          vector->y-1, //Start Y Position
+          2,          //Width
+          2);         //Height
 }
 
 void CanvasDrawMesh2D(struct Mesh2D* mesh){
