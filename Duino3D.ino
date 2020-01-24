@@ -335,6 +335,9 @@ struct World4D{
 */
 
 void CanvasDrawVector2D(struct Vector2D* vector){
+  Serial.println(vector->x);
+  Serial.println(vector->y);
+  Serial.println("\n");
   LcdFill(vector->x-3, //Start X Position
           vector->y-3, //Start Y Position
           6,          //Width
@@ -391,8 +394,8 @@ void CanvasEraseWorld2D(struct World2D* world){
 */
 
 Vector2D* Vector4D2Vector2D(struct Camera* camera,struct Vector4D* vector){
-  float zoom  = 10;
-  float zfix  = 1;
+  float zoom  = 1;
+  float zfix  = 0.35;
   Matrix4X1* tmpCameraPositionMatrix = new Matrix4X1(vector->x - camera->x, vector->y - camera->y, vector->z - camera->z, 1);
   Matrix4X1* final = Matrix4X1timesMatrix4X4(tmpCameraPositionMatrix, camera->rotationMatrix);
   delete tmpCameraPositionMatrix;
@@ -466,9 +469,8 @@ Mesh4D* mesh4d;
 void setup() {
   // put your setup code here, to run once:
   LcdInit();
-//  LcdFill(0,0,239,319);
-//  Serial.begin(9600);
-  cam1 = new Camera(0,0,0,0,0,0,240,320);
+  Serial.begin(9600);
+  cam1 = new Camera(0,0,0,0,0,0,128,64);
 }
 
 bool addingState = true;
