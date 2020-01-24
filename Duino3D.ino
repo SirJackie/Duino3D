@@ -483,21 +483,21 @@ void loop() {
   Serial.println("Loop begin");
   short XState = getJoystickXState();
   short YState = getJoystickYState();
-//  if(XState == 0 && YState == 0){
-//    return;
-//  }
-//  if(XState == -1){
-//    cam1->x -= 1;
-//  }
-//  else if(XState == 1){
-//    cam1->x += 1;
-//  }
-//  if(YState == 1){
-//    cam1->z -= 0.1;
-//  }
-//  else if(YState == -1){
-//    cam1->z += 0.1;
-//  }
+  if(XState == 0 && YState == 0){
+    return;
+  }
+  if(XState == -1){
+    cam1->x -= 1;
+  }
+  else if(XState == 1){
+    cam1->x += 1;
+  }
+  if(YState == 1){
+    cam1->z -= 0.1;
+  }
+  else if(YState == -1){
+    cam1->z += 0.1;
+  }
   u8g2.firstPage();
   do {
     u8g2.setFont(u8g2_font_ncenB14_tr);
