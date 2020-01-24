@@ -378,25 +378,6 @@ void CanvasEraseMesh2D(struct Mesh2D* mesh){
 
 void CanvasDrawWorld2D(struct World2D* world){
   for(int i = 0; i < world->listlen; i++){
-    Serial.println("Mesh{");
-      Serial.print("\tVec1{");
-      Serial.print(world->meshlist[i]->vec1->x);
-      Serial.print(",");
-      Serial.print(world->meshlist[i]->vec1->y);
-      Serial.print("}\n");
-
-      Serial.print("\tVec2{");
-      Serial.print(world->meshlist[i]->vec2->x);
-      Serial.print(",");
-      Serial.print(world->meshlist[i]->vec2->y);
-      Serial.print("}\n");
-
-      Serial.print("\tVec3{");
-      Serial.print(world->meshlist[i]->vec3->x);
-      Serial.print(",");
-      Serial.print(world->meshlist[i]->vec3->y);
-      Serial.print("}\n");
-    Serial.println("}");
     CanvasDrawMesh2D(world->meshlist[i]);
   }
 }
@@ -486,30 +467,25 @@ Camera* cam1;
 Mesh4D* mesh4d;
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600);
   LcdInit();
   cam1 = new Camera(0,0,0,0,0,0,128,64);
-//  Serial.println("Setup begin");
   u8g2.firstPage();
   do {
     u8g2.setFont(u8g2_font_ncenB14_tr);
     u8g2.drawStr(0,15,"Setup");
   } while ( u8g2.nextPage() );
   delay(500);
-//  Serial.println("Setup done");
-//  Serial.println(getFreeMemory());
 }
 
-//bool firstFrame = true;
+bool firstFrame = true;
 
 void loop() {
-//  // put your main code here, to run repeatedly:
-  Serial.println("Loop begin");
+  // put your main code here, to run repeatedly:
   short XState = getJoystickXState();
   short YState = getJoystickYState();
-//  if(XState == 0 && YState == 0 && firstFrame == false){
-//    return;
-//  }
+  if(XState == 0 && YState == 0 && firstFrame == false){
+    return;
+  }
   if(XState == -1){
     cam1->x -= 1;
   }
@@ -522,22 +498,13 @@ void loop() {
   else if(YState == -1){
     cam1->z += 0.1;
   }
-//  Serial.println("1");
-//  Serial.println(getFreeMemory());
-//  u8g2.firstPage();
-//  do {
-//    u8g2.setFont(u8g2_font_ncenB14_tr);
-//    u8g2.drawStr(0,15,"Hello World!");
-//  } while ( u8g2.nextPage() );
 
   cam1->refreshRotationMatrix();
-//  Serial.println("2");
-//  Serial.println(getFreeMemory());
-  Mesh4D** meshlist = new Mesh4D* [2];
+  Mesh4D** meshlist = new Mesh4D* [1];
   meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
 //  meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
 //  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
-  meshlist[1] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
+//  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
 //  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
 //  meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
 //  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
@@ -546,8 +513,8 @@ void loop() {
 //  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
 //  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
 //  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
-  Object4D* obj1 = new Object4D(meshlist, 2);
-  World4D* world4d1 = new World4D(2);
+  Object4D* obj1 = new Object4D(meshlist, 1);
+  World4D* world4d1 = new World4D(1);
   world4d1->PlaceObject4D(obj1,0,-2.5,0);
   delete obj1;
   World2D* world2d1 = World4D2World2D(cam1, world4d1);
@@ -556,13 +523,10 @@ void loop() {
   //Draw Meshes
   u8g2.firstPage();
   do {
-    u8g2.setFont(u8g2_font_ncenB14_tr);
-    u8g2.drawStr(0,15,"Hello World!");
     CanvasDrawWorld2D(world2d1);
   } while ( u8g2.nextPage() );
   
   
   delete world2d1;
-  Serial.println("Loop Done");
-//  firstFrame = false;
+  firstFrame = false;
 }
