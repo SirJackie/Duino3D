@@ -378,6 +378,25 @@ void CanvasEraseMesh2D(struct Mesh2D* mesh){
 
 void CanvasDrawWorld2D(struct World2D* world){
   for(int i = 0; i < world->listlen; i++){
+    Serial.println("Mesh{");
+      Serial.print("\tVec1{");
+      Serial.print(world->meshlist[i]->vec1->x);
+      Serial.print(",");
+      Serial.print(world->meshlist[i]->vec1->y);
+      Serial.print("}\n");
+
+      Serial.print("\tVec2{");
+      Serial.print(world->meshlist[i]->vec2->x);
+      Serial.print(",");
+      Serial.print(world->meshlist[i]->vec2->y);
+      Serial.print("}\n");
+
+      Serial.print("\tVec3{");
+      Serial.print(world->meshlist[i]->vec3->x);
+      Serial.print(",");
+      Serial.print(world->meshlist[i]->vec3->y);
+      Serial.print("}\n");
+    Serial.println("}");
     CanvasDrawMesh2D(world->meshlist[i]);
   }
 }
@@ -478,7 +497,7 @@ void setup() {
   } while ( u8g2.nextPage() );
   delay(500);
 //  Serial.println("Setup done");
-  Serial.println(getFreeMemory());
+//  Serial.println(getFreeMemory());
 }
 
 //bool firstFrame = true;
@@ -503,8 +522,8 @@ void loop() {
   else if(YState == -1){
     cam1->z += 0.1;
   }
-  Serial.println("1");
-  Serial.println(getFreeMemory());
+//  Serial.println("1");
+//  Serial.println(getFreeMemory());
 //  u8g2.firstPage();
 //  do {
 //    u8g2.setFont(u8g2_font_ncenB14_tr);
@@ -512,15 +531,15 @@ void loop() {
 //  } while ( u8g2.nextPage() );
 
   cam1->refreshRotationMatrix();
-  Serial.println("2");
-  Serial.println(getFreeMemory());
+//  Serial.println("2");
+//  Serial.println(getFreeMemory());
   Mesh4D** meshlist = new Mesh4D* [4];
   meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
   meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
   meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
   meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
-  Serial.println("3");
-  Serial.println(getFreeMemory());
+//  Serial.println("3");
+//  Serial.println(getFreeMemory());
 //  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
 //  meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
 //  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
@@ -530,23 +549,23 @@ void loop() {
 //  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
 //  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
   Object4D* obj1 = new Object4D(meshlist, 4);
-  Serial.println("4");
-  Serial.println(getFreeMemory());
+//  Serial.println("4");
+//  Serial.println(getFreeMemory());
   World4D* world4d1 = new World4D(4);
-  Serial.println("5");
-  Serial.println(getFreeMemory());
+//  Serial.println("5");
+//  Serial.println(getFreeMemory());
   world4d1->PlaceObject4D(obj1,0,-2.5,0);
-  Serial.println("6");
-  Serial.println(getFreeMemory());
+//  Serial.println("6");
+//  Serial.println(getFreeMemory());
   delete obj1;
   World2D* world2d1 = World4D2World2D(cam1, world4d1);
-  Serial.println("7");
-  Serial.println(getFreeMemory());
+//  Serial.println("7");
+//  Serial.println(getFreeMemory());
   delete world4d1;
 
   //Draw Meshes
-  Serial.println("8");
-  Serial.println(getFreeMemory());
+//  Serial.println("8");
+//  Serial.println(getFreeMemory());
   u8g2.firstPage();
   do {
     u8g2.setFont(u8g2_font_ncenB14_tr);
@@ -558,5 +577,5 @@ void loop() {
   delete world2d1;
   Serial.println("Loop Done");
 //  firstFrame = false;
-  Serial.println(getFreeMemory());
+//  Serial.println(getFreeMemory());
 }
