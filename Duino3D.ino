@@ -335,9 +335,6 @@ struct World4D{
 */
 
 void CanvasDrawVector2D(struct Vector2D* vector){
-  Serial.println(vector->x);
-  Serial.println(vector->y);
-  Serial.println("\n");
   LcdFill(vector->x-1, //Start X Position
           vector->y-1, //Start Y Position
           2,          //Width
@@ -469,7 +466,6 @@ Mesh4D* mesh4d;
 void setup() {
   // put your setup code here, to run once:
   LcdInit();
-  Serial.begin(9600);
   cam1 = new Camera(0,0,0,0,0,0,128,64);
 }
 
@@ -477,6 +473,9 @@ void loop() {
   // put your main code here, to run repeatedly:
   short XState = getJoystickXState();
   short YState = getJoystickYState();
+  if(XState == 0 && YState == 0){
+    return;
+  }
   if(XState == -1){
     cam1->x -= 1;
   }
@@ -518,6 +517,5 @@ void loop() {
     CanvasDrawWorld2D(world2d1);
   } while ( u8g2.nextPage() );
   
-  delay(40);
   delete world2d1;
 }
