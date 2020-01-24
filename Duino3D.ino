@@ -1,4 +1,5 @@
-#include "Duino9341.h"
+#include ".\\Drivers\\ScreenDriver.h"
+#include ".\\Drivers\\JoystickDriver.h"
 #define cosd(x) cos(x*0.017453293)
 #define sind(x) sin(x*0.017453293)
 #define tand(x) tan(x*0.017453293)
