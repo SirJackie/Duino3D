@@ -301,7 +301,7 @@ void CanvasDrawMesh2D(struct Mesh2D* mesh){
 
 Vector2D* Vector4D2Vector2D(struct Camera* camera,struct Vector4D* vector){
   float zoom  = 1;
-  float zfix  = 0.35;
+  float zfix  = 0.01;
   Matrix4X1* tmpCameraPositionMatrix = new Matrix4X1(vector->x - camera->x, vector->y - camera->y, vector->z - camera->z, 1);
   Matrix4X1* final = Matrix4X1timesMatrix4X4(tmpCameraPositionMatrix, camera->rotationMatrix);
   delete tmpCameraPositionMatrix;
@@ -372,10 +372,10 @@ void loop() {
     cam1->x += 1;
   }
   if(YState == 1){
-    cam1->z -= 0.1;
+    cam1->z -= 1;
   }
   else if(YState == -1){
-    cam1->z += 0.1;
+    cam1->z += 1;
   }
 
   cam1->refreshRotationMatrix();
