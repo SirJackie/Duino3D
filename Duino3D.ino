@@ -243,21 +243,6 @@ struct Mesh2D{
   }
 };
 
-struct World2D{
-  Mesh2D** meshlist;
-  int listlen;
-  World2D(int listlen){
-    this->meshlist = new Mesh2D* [listlen];
-    this->listlen = listlen;
-  }
-  ~World2D(){
-    for(int i = 0; i < this->listlen; i++){
-      delete this->meshlist[i];
-    }
-    delete [] this->meshlist;
-  }
-};
-
 struct Vector4D{
   float x;
   float y;
@@ -286,64 +271,11 @@ struct Mesh4D{
   }
 };
 
-struct Object4D{
-  Mesh4D** meshlist;
-  int listlen;
-  Object4D(Mesh4D** meshlist, int listlen){
-    this->meshlist = meshlist;
-    this->listlen = listlen;
-  }
-  ~Object4D(){
-    for(int i = 0; i < listlen; i++){
-      delete this->meshlist[i];
-    }
-    delete this->meshlist;
-  }
-};
-
-struct World4D{
-  Mesh4D** meshlist;
-  int listlen;
-  int listcounter = 0;
-  World4D(int listlen){
-    this->meshlist = new Mesh4D* [listlen];
-    this->listlen = listlen;
-  }
-  ~World4D(){
-    for(int i = 0; i < this->listlen; i++){
-      delete this->meshlist[i];
-    }
-    delete [] this->meshlist;
-  }
-  void PlaceObject4D(Object4D* newObject,float x,float y,float z){
-    for(int i = 0; i < newObject->listlen; i++){
-      this->meshlist[listcounter+i] = new Mesh4D(new Vector4D(newObject->meshlist[i]->vec1->x + x,
-                                                            newObject->meshlist[i]->vec1->y + y,
-                                                            newObject->meshlist[i]->vec1->z + z),
-                                               new Vector4D(newObject->meshlist[i]->vec2->x + x,
-                                                            newObject->meshlist[i]->vec2->y + y,
-                                                            newObject->meshlist[i]->vec2->z + z),
-                                               new Vector4D(newObject->meshlist[i]->vec3->x + x,
-                                                            newObject->meshlist[i]->vec3->y + y,
-                                                            newObject->meshlist[i]->vec3->z + z)); 
-    }
-    this->listcounter += newObject->listlen;
-  }
-};
-  
-
 /*
 ** Canvas Functions
 */
 
 void CanvasDrawVector2D(struct Vector2D* vector){
-  LcdFill(vector->x-1, //Start X Position
-          vector->y-1, //Start Y Position
-          2,          //Width
-          2);         //Height
-}
-
-void CanvasEraseVector2D(struct Vector2D* vector){
   LcdFill(vector->x-1, //Start X Position
           vector->y-1, //Start Y Position
           2,          //Width
@@ -361,31 +293,6 @@ void CanvasDrawMesh2D(struct Mesh2D* mesh){
   LcdDrawLine(mesh->vec1->x, mesh->vec1->y, mesh->vec2->x, mesh->vec2->y);
   LcdDrawLine(mesh->vec2->x, mesh->vec2->y, mesh->vec3->x, mesh->vec3->y);
   LcdDrawLine(mesh->vec3->x, mesh->vec3->y, mesh->vec1->x, mesh->vec1->y);
-}
-
-void CanvasEraseMesh2D(struct Mesh2D* mesh){
-  if(mesh->vec1->x == -1 || mesh->vec2->x == -1 || mesh->vec3->x == -1){
-    return; //don't show this vector
-  }
-  CanvasEraseVector2D(mesh->vec1);
-  CanvasEraseVector2D(mesh->vec2);
-  CanvasEraseVector2D(mesh->vec3);
-
-  LcdDrawLine(mesh->vec1->x, mesh->vec1->y, mesh->vec2->x, mesh->vec2->y);
-  LcdDrawLine(mesh->vec2->x, mesh->vec2->y, mesh->vec3->x, mesh->vec3->y);
-  LcdDrawLine(mesh->vec3->x, mesh->vec3->y, mesh->vec1->x, mesh->vec1->y);
-}
-
-void CanvasDrawWorld2D(struct World2D* world){
-  for(int i = 0; i < world->listlen; i++){
-    CanvasDrawMesh2D(world->meshlist[i]);
-  }
-}
-
-void CanvasEraseWorld2D(struct World2D* world){
-  for(int i = 0; i < world->listlen; i++){
-    CanvasEraseMesh2D(world->meshlist[i]);
-  }
 }
 
 /*
@@ -421,50 +328,10 @@ Mesh2D* Mesh4D2Mesh2D(struct Camera* camera,struct Mesh4D* mesh4d){
                     Vector4D2Vector2D(camera, mesh4d->vec3));
 }
 
-World2D* World4D2World2D(struct Camera* camera,struct World4D* world4d){
-  World2D* world2d = new World2D(world4d->listlen);
-  for(int i = 0; i < world4d->listlen; i++){
-    world2d->meshlist[i] = Mesh4D2Mesh2D(camera, world4d->meshlist[i]);
-  }
-  return world2d;
-}
-
-//window.onload = function(){
-//  cam1 = new Camera(0, 0, -10, 0, 0, 0, document.body.clientWidth, document.body.clientHeight);//global variable,with no "var"
-//  var ctx  = CanvasInit("canvas1", cam1.screenWidth, cam1.screenHeight);
-//  var obj1 = new Object4D([new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)), //front
-//               new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)), //front
-//               new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)), //left
-//               new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)), //left
-//               new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)), //right
-//               new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)), //right
-//               new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)), //back
-//               new Mesh4D(new Vector4D(1,4,4), new Vector4D(4,4,4), new Vector4D(4,1,4)), //back
-//               new Mesh4D(new Vector4D(1,4,1), new Vector4D(1,4,4), new Vector4D(4,4,4)), //up
-//               new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)), //up
-//               new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)), //down
-//               new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)), //down
-//               ]);
-//  var world4d1 = new World4D();
-//  var area = 70;
-//  world4d1.PlaceObject4D(obj1, -2.5, -2.5, -2.5);
-//  for(var i = 0; i < 8; i++){
-//    world4d1.PlaceObject4D(obj1, Math.random()*area   , Math.random()*area/2   , Math.random()*area);
-//    world4d1.PlaceObject4D(obj1, Math.random()*area*-1, Math.random()*area/2   , Math.random()*area);
-//    world4d1.PlaceObject4D(obj1, Math.random()*area   , Math.random()*area/2*-1, Math.random()*area);
-//    world4d1.PlaceObject4D(obj1, Math.random()*area*-1, Math.random()*area/2*-1, Math.random()*area);
-//  }
-//
-//  requestAnimationFrame(function main(){
-//    cam1.refreshRotationMatrix();
-//    var world2d1 = World4D2World2D(cam1,world4d1);
-//    ctx.clearRect(0,0,cam1.screenWidth,cam1.screenHeight);
-//    CanvasDrawWorld2D(ctx,world2d1,"rgba(0,144,255,0.5)");
-//    requestAnimationFrame(main);
-//  });
-//}
 Camera* cam1;
-Mesh4D* mesh4d;
+int listlen = 4;
+Mesh4D** meshlist = new Mesh4D* [listlen];
+
 void setup() {
   // put your setup code here, to run once:
   LcdInit();
@@ -474,6 +341,18 @@ void setup() {
     u8g2.setFont(u8g2_font_ncenB14_tr);
     u8g2.drawStr(0,15,"Setup");
   } while ( u8g2.nextPage() );
+  meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
+  meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
+  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
+  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
+  //meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
+  //meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
+  //meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
+  //meshlist[7] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(4,4,4), new Vector4D(4,1,4)); //back
+  //meshlist[8] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(1,4,4), new Vector4D(4,4,4)); //up
+  //meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
+  //meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
+  //meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
   delay(500);
 }
 
@@ -500,33 +379,22 @@ void loop() {
   }
 
   cam1->refreshRotationMatrix();
-  Mesh4D** meshlist = new Mesh4D* [1];
-  meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
-//  meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
-//  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
-//  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
-//  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
-//  meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
-//  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
-//  meshlist[7] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(4,4,4), new Vector4D(4,1,4)); //back
-//  meshlist[8] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(1,4,4), new Vector4D(4,4,4)); //up
-//  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
-//  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
-//  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
-  Object4D* obj1 = new Object4D(meshlist, 1);
-  World4D* world4d1 = new World4D(1);
-  world4d1->PlaceObject4D(obj1,0,-2.5,0);
-  delete obj1;
-  World2D* world2d1 = World4D2World2D(cam1, world4d1);
-  delete world4d1;
-
+  Mesh2D** meshlist2d = new Mesh2D* [listlen];
+  for(int i = 0; i < listlen; i++){
+    meshlist2d[i] = Mesh4D2Mesh2D(cam1, meshlist[i]);
+  }
+  
   //Draw Meshes
   u8g2.firstPage();
   do {
-    CanvasDrawWorld2D(world2d1);
+    for(int i = 0; i < listlen; i++){
+      CanvasDrawMesh2D(meshlist2d[i]);
+    }
   } while ( u8g2.nextPage() );
-  
-  
-  delete world2d1;
+
+  for(int i = 0; i < listlen; i++){
+    delete meshlist2d[i];
+  }
+  delete meshlist2d;
   firstFrame = false;
 }
