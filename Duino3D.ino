@@ -346,7 +346,7 @@ void setup() {
   //Initialize
   Serial.begin(9600);
   u8g2.begin();
-  initCamera(&cam1, 0, 0, -2, 0, 0, 0, 128, 64);
+  initCamera(&cam1, 2, 2, -1, 0, 0, 0, 128, 64);
 
 //  //Display String
 //  u8g2.firstPage();
@@ -380,20 +380,21 @@ void loop(){
 //  }
   
   //Draw Meshes
-  u8g2.firstPage();
-  do {
-    for(int i = 0; i < V4DLIST_LEN; i++){
+  for(int i = 0; i < V4DLIST_LEN; i++){
       Vector4D2Vector2D(&cam1,
                         pgm_read_word(V4DList + (i*3+0)), pgm_read_word(V4DList + (i*3+1)), pgm_read_word(V4DList + (i*3+2)),
                         &(V2DList[i*2+0]), &(V2DList[i*2+1])
                        );
-//      tmp = "";
+  }
+  u8g2.firstPage();
+  do {
+    for(int i = 0; i < V4DLIST_LEN; i++){
       u8g2.drawBox((int)(V2DList[i*2+0]), (int)(V2DList[i*2+1]), 3, 3);
-//      tmp += "x:";
-//      tmp += (V2DList[i*2+0]);
-//      tmp += "y:";
-//      tmp += (V2DList[i*2+1]);
-//      Serial.println(tmp);
+    }
+    for(int i = 0; i < V4DLIST_LEN / 3; i++){
+      u8g2.drawLine((int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]), (int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]));
+      u8g2.drawLine((int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]), (int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]));
+      u8g2.drawLine((int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]), (int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]));
     }
   } while ( u8g2.nextPage() );
 
