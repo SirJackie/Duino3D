@@ -1,3 +1,4 @@
+String tmp = "";
 
 /* External Libraries Including */
 #include <U8g2lib.h>
@@ -13,11 +14,11 @@
 #define asind(x) asin(x*0.017453293)
 #define atand(x) atan(x*0.017453293)
 
-#define V4DLIST_LEN  108
+#define V4DLIST_LEN  36
 #define V4DLIST_MAX  300
 #define V2DLIST_MAX  32
 
-const int V4DList[108] PROGMEM = {
+const int V4DList[V4DLIST_LEN * 3] PROGMEM = {
   1,1,1, 4,1,1, 1,4,1, //front
   1,4,1, 4,4,1, 4,1,1, //front
   1,4,4, 1,1,4, 1,1,1, //left
@@ -249,27 +250,76 @@ void refreshRotationMatrix(struct Camera* cam){
 
 struct Matrix4X1 tmpCameraPositionMatrix, final;
 
-void Vector4D2Vector2D(struct Camera* camera, int v4dx, int v4dy, int v4dz, int* v2dx, int* v2dy){
-  int zoom  = 1;
-  int zfix  = 0.01;
+void Vector4D2Vector2D(struct Camera* camera, int v4dx, int v4dy, int v4dz, char* v2dx, char* v2dy){
+//  tmp = "";
+//  tmp += "v4dx:";
+//  tmp += v4dx;
+//  tmp += "v4dy:";
+//  tmp += v4dy;
+//  tmp += "v4dz:";
+//  tmp += v4dz;
+//  Serial.println(tmp);
+  
+  float zoom  = 0.15;
+  float zfix  = 0.01;
   initM41(&tmpCameraPositionMatrix,
           v4dx - camera->x, v4dy - camera->y, v4dz - camera->z, 1);
+
+//  tmp = "";
+//  tmp += "v4dx:";
+//  tmp += v4dx - camera->x;
+//  tmp += "v4dy:";
+//  tmp += v4dy - camera->y;
+//  tmp += "v4dz:";
+//  tmp += v4dz - camera->z;
+//  Serial.println(tmp);
+  
   M41timesM44(&tmpCameraPositionMatrix, &(camera->rotationMatrix), &final);
-  int vecx  = final.m00;
-  int vecy  = final.m01;
-  int vecz  = final.m02;
 
-  int x2d = (final.m00) / (final.m02*zfix);
-  int y2d = (final.m01) / (final.m02*zfix);
+//  tmp = "final<";
+//  tmp += "v4dx:";
+//  tmp += final.m00;
+//  tmp += "v4dy:";
+//  tmp += final.m01;
+//  tmp += "v4dz:";
+//  tmp += final.m02;
+//  tmp += ">";
+//  Serial.println(tmp);
 
-  *v2dx = (camera->screenWidth  / 2) + (x2d * zoom);
-  *v2dy = (camera->screenHeight / 2) + (y2d * zoom);
+  float x2d = (float) ((float)(final.m00)) / ((float)final.m02*(float)zfix);
+  float y2d = (float) ((float)(final.m01)) / ((float)final.m02*(float)zfix);
 
+//  tmp = "2d<";
+//  tmp += "x2d=";
+//  tmp += "(";
+//  tmp += final.m00;
+//  tmp += ") / (";
+//  tmp += final.m02;
+//  tmp += "*";
+//  tmp += zfix;
+//  tmp += ") = ";
+//  tmp += x2d;
+//  tmp += ">";
+//  Serial.println(tmp);
+
+  *v2dx = (char)(   ((float)camera->screenWidth  / (float)2) + ((float)x2d * (float)zoom)   );
+  *v2dy = (char)(   ((float)camera->screenHeight / (float)2) + ((float)y2d * (float)zoom)   );
+    
+    
+//  tmp = "v<";
+//  tmp += " v2dx:";
+//  tmp += (int)*v2dx;
+//  tmp += " v2dy:";
+//  tmp += (int)*v2dy;
+//  tmp += " >";
+//  Serial.println(tmp);
+
+//  Serial.println(((float)camera->screenWidth  / (float)2) + ((float)x2d * (float)zoom));
 }
 
 struct Camera cam1;
-char V2DList[V2DLIST_MAX];
-int V2DList_next = 0;
+char V2DList[V4DLIST_LEN * 2];
+int  V2DList_next = 0;
 
 bool V4DListAvailable(int* V4DList_next)
 {
@@ -288,6 +338,87 @@ bool V4DListAvailable(int* V4DList_next)
     return false;
   }
 }
+
+
+
+void setup() {
+  
+  //Initialize
+  Serial.begin(9600);
+  u8g2.begin();
+  initCamera(&cam1, 0, 0, -2, 0, 0, 0, 128, 64);
+
+//  //Display String
+//  u8g2.firstPage();
+//  do {
+//    u8g2.setFont(u8g2_font_ncenB14_tr);
+//    u8g2.drawStr(0,15,"Setup");
+//  } while ( u8g2.nextPage() );
+//  delay(500);
+//
+////  //Print Vector4D Data
+////  for(int i = 0; i < V4DLIST_LEN; i++){
+////    Serial.println(pgm_read_word(V4DList + i));
+////  }
+//  delay(500);
+}
+
+
+
+void loop(){
+
+  refreshRotationMatrix(&cam1);
+  for(int i = 0; i < V4DLIST_LEN; i++){
+    Vector4D2Vector2D(&cam1,
+                      pgm_read_word(V4DList + (i*3+0)), pgm_read_word(V4DList + (i*3+1)), pgm_read_word(V4DList + (i*3+2)),
+                      &(V2DList[i*2+0]), &(V2DList[i*2+1])
+                     );
+  }
+
+//  for(int i = 0; i < V4DLIST_LEN * 2; i++){
+//    Serial.println(V2DList[i]);
+//  }
+  
+  //Draw Meshes
+  u8g2.firstPage();
+  do {
+    for(int i = 0; i < V4DLIST_LEN; i++){
+      Vector4D2Vector2D(&cam1,
+                        pgm_read_word(V4DList + (i*3+0)), pgm_read_word(V4DList + (i*3+1)), pgm_read_word(V4DList + (i*3+2)),
+                        &(V2DList[i*2+0]), &(V2DList[i*2+1])
+                       );
+//      tmp = "";
+      u8g2.drawBox((int)(V2DList[i*2+0]), (int)(V2DList[i*2+1]), 3, 3);
+//      tmp += "x:";
+//      tmp += (V2DList[i*2+0]);
+//      tmp += "y:";
+//      tmp += (V2DList[i*2+1]);
+//      Serial.println(tmp);
+    }
+  } while ( u8g2.nextPage() );
+
+//  for(int i = 0; i < listlen; i++){
+//    delete meshlist2d[i];
+//  }
+//  delete meshlist2d;
+//  firstFrame = false;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //void pushMesh4D(char** V4DList, int* V4DList_next, char v1x, char v1y, char v1z, char v2x, char v2y, char v2z, char v3x, char v3y, char v3z)
 //{
@@ -315,98 +446,3 @@ bool V4DListAvailable(int* V4DList_next)
 //  (*V4DList)[*V4DList_next] = v3z;
 //  (*V4DList_next)++;
 //}
-
-void setup() {
-  Serial.begin(9600);
-  
-  //Initialize the SSD1306 screen
-  u8g2.begin();
-
-  //initialize the camera
-  initCamera(&cam1, 0, 0, 0, 0, 0, 0, 128, 64);
-
-  String tmp = "";
-  tmp += V4DLIST_MAX;
-  
-  u8g2.firstPage();
-  do {
-    u8g2.setFont(u8g2_font_ncenB14_tr);
-    u8g2.drawStr(0,15,tmp.c_str());
-  } while ( u8g2.nextPage() );
-  delay(500);
-
-  for(int i = 0; i < V4DLIST_LEN; i++){
-    Serial.println(i);
-    Serial.println(pgm_read_word(V4DList + i));
-  }
-
-  delay(500);
-}
-
-//bool firstFrame = true;
-//
-//void loop() {
-//  // put your main code here, to run repeatedly:
-//  short XState = getJoystickXState();
-//  short YState = getJoystickYState();
-//  if(XState == 0 && YState == 0 && firstFrame == false){
-//    return;
-//  }
-//  if(XState == -1){
-//    cam1->x -= 1;
-//  }
-//  else if(XState == 1){
-//    cam1->x += 1;
-//  }
-//  if(YState == 1){
-//    cam1->z -= 1;
-//  }
-//  else if(YState == -1){
-//    cam1->z += 1;
-//  }
-//
-//  cam1->refreshRotationMatrix();
-//  Mesh2D** meshlist2d = new Mesh2D* [listlen];
-//  for(int i = 0; i < listlen; i++){
-//    meshlist2d[i] = Mesh4D2Mesh2D(cam1, meshlist[i]);
-//  }
-//  
-//  //Draw Meshes
-//  u8g2.firstPage();
-//  do {
-//    for(int i = 0; i < listlen; i++){
-//      CanvasDrawMesh2D(meshlist2d[i]);
-//    }
-//  } while ( u8g2.nextPage() );
-//
-//  for(int i = 0; i < listlen; i++){
-//    delete meshlist2d[i];
-//  }
-//  delete meshlist2d;
-//  firstFrame = false;
-//}
-
-//void setup(){
-//  Serial.begin(9600);
-//  struct Matrix4X4 m44_1, m44_2, m44_result;
-//  initM44(&m44_1,
-//          1, 0, 0, 0,
-//          0, 1, 0, 0,
-//          0, 0, 1, 0,
-//          0, 0, 0, 1);
-//  initM44(&m44_2,
-//          1, 0, 0, 0,
-//          0, 1, 0, 0,
-//          0, 0, 1, 0,
-//          0, 0, 0, 1);
-//  M44timesM44(&m44_1, &m44_2, &m44_result);
-//  showM44(&m44_result);
-//}
-
-void loop(){
-  u8g2.firstPage();
-  do {
-    u8g2.setFont(u8g2_font_ncenB14_tr);
-    u8g2.drawStr(0,15,"Loop");
-  } while ( u8g2.nextPage() );
-}
