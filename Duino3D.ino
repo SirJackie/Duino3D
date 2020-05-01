@@ -1,6 +1,7 @@
 
 /* External Libraries Including */
 #include <U8g2lib.h>
+#include <avr/pgmspace.h>
 #include "Buttons.h"
 #include "MemoryFree.h"
 
@@ -12,8 +13,24 @@
 #define asind(x) asin(x*0.017453293)
 #define atand(x) atan(x*0.017453293)
 
-#define V4DLIST_MAX  200
+#define V4DLIST_LEN  108
+#define V4DLIST_MAX  300
 #define V2DLIST_MAX  32
+
+const int V4DList[108] PROGMEM = {
+  1,1,1, 4,1,1, 1,4,1, //front
+  1,4,1, 4,4,1, 4,1,1, //front
+  1,4,4, 1,1,4, 1,1,1, //left
+  1,4,4, 1,4,1, 1,1,1, //left
+  4,4,4, 4,1,4, 4,1,1, //right
+  4,4,4, 4,4,1, 4,1,1, //right
+  1,1,4, 4,1,4, 1,4,4, //back
+  1,4,4, 4,4,4, 4,1,4, //back
+  1,4,1, 1,4,4, 4,4,4, //up
+  1,4,1, 4,4,1, 4,4,4, //up
+  1,1,1, 1,1,4, 4,1,4, //down
+  1,1,1, 4,1,1, 4,1,4  //down
+};
 
 
 U8G2_SSD1306_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 16, /* data=*/ 17);
@@ -251,9 +268,7 @@ void Vector4D2Vector2D(struct Camera* camera, int v4dx, int v4dy, int v4dz, int*
 }
 
 struct Camera cam1;
-int V4DList[V4DLIST_MAX];
-int V2DList[V2DLIST_MAX];
-int V4DList_next = 0;
+char V2DList[V2DLIST_MAX];
 int V2DList_next = 0;
 
 bool V4DListAvailable(int* V4DList_next)
@@ -274,60 +289,57 @@ bool V4DListAvailable(int* V4DList_next)
   }
 }
 
-void pushMesh4D(int** V4DList, int* V4DList_next, int v1x, int v1y, int v1z, int v2x, int v2y, int v2z, int v3x, int v3y, int v3z)
-{
-  if(!V4DListAvailable(V4DList_next)){
-    return;
-  }
-  (*V4DList)[*V4DList_next] = v1x;
-  (*V4DList_next)++;
-  (*V4DList)[*V4DList_next] = v1y;
-  (*V4DList_next)++;
-  (*V4DList)[*V4DList_next] = v1z;
-  (*V4DList_next)++;
-
-  (*V4DList)[*V4DList_next] = v2x;
-  (*V4DList_next)++;
-  (*V4DList)[*V4DList_next] = v2y;
-  (*V4DList_next)++;
-  (*V4DList)[*V4DList_next] = v2z;
-  (*V4DList_next)++;
-
-  (*V4DList)[*V4DList_next] = v3x;
-  (*V4DList_next)++;
-  (*V4DList)[*V4DList_next] = v3y;
-  (*V4DList_next)++;
-  (*V4DList)[*V4DList_next] = v3z;
-  (*V4DList_next)++;
-}
+//void pushMesh4D(char** V4DList, int* V4DList_next, char v1x, char v1y, char v1z, char v2x, char v2y, char v2z, char v3x, char v3y, char v3z)
+//{
+//  if(!V4DListAvailable(V4DList_next)){
+//    return;
+//  }
+//  (*V4DList)[*V4DList_next] = v1x;
+//  (*V4DList_next)++;
+//  (*V4DList)[*V4DList_next] = v1y;
+//  (*V4DList_next)++;
+//  (*V4DList)[*V4DList_next] = v1z;
+//  (*V4DList_next)++;
+//
+//  (*V4DList)[*V4DList_next] = v2x;
+//  (*V4DList_next)++;
+//  (*V4DList)[*V4DList_next] = v2y;
+//  (*V4DList_next)++;
+//  (*V4DList)[*V4DList_next] = v2z;
+//  (*V4DList_next)++;
+//
+//  (*V4DList)[*V4DList_next] = v3x;
+//  (*V4DList_next)++;
+//  (*V4DList)[*V4DList_next] = v3y;
+//  (*V4DList_next)++;
+//  (*V4DList)[*V4DList_next] = v3z;
+//  (*V4DList_next)++;
+//}
 
 void setup() {
+  Serial.begin(9600);
   
   //Initialize the SSD1306 screen
   u8g2.begin();
 
   //initialize the camera
   initCamera(&cam1, 0, 0, 0, 0, 0, 0, 128, 64);
+
+  String tmp = "";
+  tmp += V4DLIST_MAX;
   
   u8g2.firstPage();
   do {
     u8g2.setFont(u8g2_font_ncenB14_tr);
-    u8g2.drawStr(0,15,"Setup");
+    u8g2.drawStr(0,15,tmp.c_str());
   } while ( u8g2.nextPage() );
   delay(500);
-  
-  pushMesh4D((int**)&V4DList, &V4DList_next, 1,1,1, 4,1,1, 1,4,1); //front
-//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,4,1, 4,4,1, 4,1,1); //front
-//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,4,4, 1,1,4, 1,1,1); //left
-//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,4,4, 1,4,1, 1,1,1); //left
-//  pushMesh4D((int**)&V4DList, &V4DList_next, 4,4,4, 4,1,4, 4,1,1); //right
-//  pushMesh4D((int**)&V4DList, &V4DList_next, 4,4,4, 4,4,1, 4,1,1); //right
-//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,1,4, 4,1,4, 1,4,4); //back
-//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,4,4, 4,4,4, 4,1,4); //back
-//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,4,1, 1,4,4, 4,4,4); //up
-//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,4,1, 4,4,1, 4,4,4); //up
-//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,1,1, 1,1,4, 4,1,4); //down
-//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,1,1, 4,1,1, 4,1,4); //down
+
+  for(int i = 0; i < V4DLIST_LEN; i++){
+    Serial.println(i);
+    Serial.println(pgm_read_word(V4DList + i));
+  }
+
   delay(500);
 }
 
