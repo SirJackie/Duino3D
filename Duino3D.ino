@@ -346,6 +346,7 @@ void setup() {
   //Initialize
   Serial.begin(9600);
   u8g2.begin();
+  initButtons();
   initCamera(&cam1, 2, 2, -1, 0, 0, 0, 128, 64);
 
 //  //Display String
@@ -364,8 +365,26 @@ void setup() {
 }
 
 
-
+char bstmp;
 void loop(){
+  bstmp = getButtonState();
+  Serial.println((int)bstmp);
+  if(bstmp == BTN_UP){
+    cam1.z += 1;
+    delay(300);
+  }
+  else if(bstmp == BTN_DOWN){
+    cam1.z -= 1;
+    delay(300);
+  }
+  else if(bstmp == BTN_LEFT){
+    cam1.x -= 1;
+    delay(300);
+  }
+  else if(bstmp == BTN_RIGHT){
+    cam1.x += 1;
+    delay(300);
+  }
 
   refreshRotationMatrix(&cam1);
   for(int i = 0; i < V4DLIST_LEN; i++){
