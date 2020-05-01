@@ -12,6 +12,9 @@
 #define asind(x) asin(x*0.017453293)
 #define atand(x) atan(x*0.017453293)
 
+#define V4DLIST_MAX  200
+#define V2DLIST_MAX  32
+
 
 U8G2_SSD1306_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 16, /* data=*/ 17);
 
@@ -223,124 +226,80 @@ void refreshRotationMatrix(struct Camera* cam){
   M44timesM44(&ZYRotationMatrix, &XRotationMatrix, &(cam->rotationMatrix));
 }
 
-
-
-struct Vector2D{
-  int x;
-  int y;
-};
-
-void initVector2D(struct Vector2D* v2d, int x, int y){
-  v2d->x = x;
-  v2d->y = y;
-}
-
-//struct Mesh2D{
-//  Vector2D* vec1;
-//  Vector2D* vec2;
-//  Vector2D* vec3;
-//  Mesh2D(Vector2D* vec1, Vector2D* vec2, Vector2D* vec3){
-//    this->vec1 = vec1;
-//    this->vec2 = vec2;
-//    this->vec3 = vec3;
-//  }
-//  ~Mesh2D(){
-//    delete this->vec1;
-//    delete this->vec2;
-//    delete this->vec3;
-//  }
-//};
-
-struct Vector4D{
-  int x;
-  int y;
-  int z;
-  int w;
-};
-
-void initVector4D(struct Vector4D* v4d, int x, int y, int z){
-  v4d->x = x;
-  v4d->y = y;
-  v4d->z = z;
-  v4d->w = 1;
-}
-
-//struct Mesh4D{
-//  Vector4D* vec1;
-//  Vector4D* vec2;
-//  Vector4D* vec3;
-//  Mesh4D(Vector4D* vec1, Vector4D* vec2, Vector4D* vec3){
-//    this->vec1 = vec1;
-//    this->vec2 = vec2;
-//    this->vec3 = vec3;
-//  }
-//  ~Mesh4D(){
-//    delete this->vec1;
-//    delete this->vec2;
-//    delete this->vec3;
-//  }
-//};
-
-/*
-** Canvas Functions
-*/
-
-//void CanvasDrawVector2D(struct Vector2D* vector){
-//  LcdFill(vector->x-1, //Start X Position
-//          vector->y-1, //Start Y Position
-//          2,          //Width
-//          2);         //Height
-//}
-
-//void CanvasDrawMesh2D(struct Mesh2D* mesh){
-//  //if(mesh->vec1->x == -1 || mesh->vec2->x == -1 || mesh->vec3->x == -1){
-//  //  return; //don't show this vector
-//  //}
-//  CanvasDrawVector2D(mesh->vec1);
-//  CanvasDrawVector2D(mesh->vec2);
-//  CanvasDrawVector2D(mesh->vec3);
-//
-//  LcdDrawLine(mesh->vec1->x, mesh->vec1->y, mesh->vec2->x, mesh->vec2->y);
-//  LcdDrawLine(mesh->vec2->x, mesh->vec2->y, mesh->vec3->x, mesh->vec3->y);
-//  LcdDrawLine(mesh->vec3->x, mesh->vec3->y, mesh->vec1->x, mesh->vec1->y);
-//}
-
 /*
 ** Projection Functions
 */
 
-//Vector2D* Vector4D2Vector2D(struct Camera* camera,struct Vector4D* vector){
-//  int zoom  = 1;
-//  int zfix  = 0.01;
-//  Matrix4X1* tmpCameraPositionMatrix = new Matrix4X1(vector->x - camera->x, vector->y - camera->y, vector->z - camera->z, 1);
-//  Matrix4X1* final = Matrix4X1timesMatrix4X4(tmpCameraPositionMatrix, camera->rotationMatrix);
-//  delete tmpCameraPositionMatrix;
-//  int vecx  = final->m00;
-//  int vecy  = final->m01;
-//  int vecz  = final->m02;
-//  delete final;
-//
-//  if(vecz <= 0){
-//    return new Vector2D(-1,-1); //don't show this vector
-//  } else {
-//    int x2d = (vecx) / (vecz*zfix);
-//    int y2d = (vecy) / (vecz*zfix);
-//
-//    int xScreen = (camera->screenWidth  / 2) + (x2d * zoom);
-//    int yScreen = (camera->screenHeight / 2) + (y2d * zoom);
-//    return new Vector2D(xScreen, yScreen);
-//  }
-//}
-//
-//Mesh2D* Mesh4D2Mesh2D(struct Camera* camera,struct Mesh4D* mesh4d){
-//  return new Mesh2D(Vector4D2Vector2D(camera, mesh4d->vec1),
-//                    Vector4D2Vector2D(camera, mesh4d->vec2),
-//                    Vector4D2Vector2D(camera, mesh4d->vec3));
-//}
+struct Matrix4X1 tmpCameraPositionMatrix, final;
+
+void Vector4D2Vector2D(struct Camera* camera, int v4dx, int v4dy, int v4dz, int* v2dx, int* v2dy){
+  int zoom  = 1;
+  int zfix  = 0.01;
+  initM41(&tmpCameraPositionMatrix,
+          v4dx - camera->x, v4dy - camera->y, v4dz - camera->z, 1);
+  M41timesM44(&tmpCameraPositionMatrix, &(camera->rotationMatrix), &final);
+  int vecx  = final.m00;
+  int vecy  = final.m01;
+  int vecz  = final.m02;
+
+  int x2d = (final.m00) / (final.m02*zfix);
+  int y2d = (final.m01) / (final.m02*zfix);
+
+  *v2dx = (camera->screenWidth  / 2) + (x2d * zoom);
+  *v2dy = (camera->screenHeight / 2) + (y2d * zoom);
+
+}
 
 struct Camera cam1;
-int listlen = 8;
-//Mesh4D** meshlist = new Mesh4D* [listlen];
+int V4DList[V4DLIST_MAX];
+int V2DList[V2DLIST_MAX];
+int V4DList_next = 0;
+int V2DList_next = 0;
+
+bool V4DListAvailable(int* V4DList_next)
+{
+  if((*(V4DList_next) + 9) < V4DLIST_MAX)
+  {
+    return true;
+  }
+  else{
+    Serial.println("V4DList Overflowed!!!");
+    u8g2.firstPage();
+    do {
+      u8g2.setFont(u8g2_font_ncenB14_tr);
+      u8g2.drawStr(0,15,"V4DList Overflowed!!!");
+    } while ( u8g2.nextPage() );
+    delay(500);
+    return false;
+  }
+}
+
+void pushMesh4D(int** V4DList, int* V4DList_next, int v1x, int v1y, int v1z, int v2x, int v2y, int v2z, int v3x, int v3y, int v3z)
+{
+  if(!V4DListAvailable(V4DList_next)){
+    return;
+  }
+  (*V4DList)[*V4DList_next] = v1x;
+  (*V4DList_next)++;
+  (*V4DList)[*V4DList_next] = v1y;
+  (*V4DList_next)++;
+  (*V4DList)[*V4DList_next] = v1z;
+  (*V4DList_next)++;
+
+  (*V4DList)[*V4DList_next] = v2x;
+  (*V4DList_next)++;
+  (*V4DList)[*V4DList_next] = v2y;
+  (*V4DList_next)++;
+  (*V4DList)[*V4DList_next] = v2z;
+  (*V4DList_next)++;
+
+  (*V4DList)[*V4DList_next] = v3x;
+  (*V4DList_next)++;
+  (*V4DList)[*V4DList_next] = v3y;
+  (*V4DList_next)++;
+  (*V4DList)[*V4DList_next] = v3z;
+  (*V4DList_next)++;
+}
 
 void setup() {
   
@@ -355,20 +314,21 @@ void setup() {
     u8g2.setFont(u8g2_font_ncenB14_tr);
     u8g2.drawStr(0,15,"Setup");
   } while ( u8g2.nextPage() );
+  delay(500);
   
-//  meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
-//  meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
-//  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
-//  meshlist[3] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,4,1), new Vector4D(1,1,1)); //left
-//  meshlist[4] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,1,4), new Vector4D(4,1,1)); //right
-//  meshlist[5] = new Mesh4D(new Vector4D(4,4,4), new Vector4D(4,4,1), new Vector4D(4,1,1)); //right
-//  meshlist[6] = new Mesh4D(new Vector4D(1,1,4), new Vector4D(4,1,4), new Vector4D(1,4,4)); //back
-//  meshlist[7] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(4,4,4), new Vector4D(4,1,4)); //back
-////  meshlist[8] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(1,4,4), new Vector4D(4,4,4)); //up
-////  meshlist[9] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,4,4)); //up
-////  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
-////  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
-//  delay(500);
+  pushMesh4D((int**)&V4DList, &V4DList_next, 1,1,1, 4,1,1, 1,4,1); //front
+//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,4,1, 4,4,1, 4,1,1); //front
+//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,4,4, 1,1,4, 1,1,1); //left
+//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,4,4, 1,4,1, 1,1,1); //left
+//  pushMesh4D((int**)&V4DList, &V4DList_next, 4,4,4, 4,1,4, 4,1,1); //right
+//  pushMesh4D((int**)&V4DList, &V4DList_next, 4,4,4, 4,4,1, 4,1,1); //right
+//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,1,4, 4,1,4, 1,4,4); //back
+//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,4,4, 4,4,4, 4,1,4); //back
+//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,4,1, 1,4,4, 4,4,4); //up
+//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,4,1, 4,4,1, 4,4,4); //up
+//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,1,1, 1,1,4, 4,1,4); //down
+//  pushMesh4D((int**)&V4DList, &V4DList_next, 1,1,1, 4,1,1, 4,1,4); //down
+  delay(500);
 }
 
 //bool firstFrame = true;
@@ -435,6 +395,6 @@ void loop(){
   u8g2.firstPage();
   do {
     u8g2.setFont(u8g2_font_ncenB14_tr);
-    u8g2.drawStr(0,15,"Setup");
+    u8g2.drawStr(0,15,"Loop");
   } while ( u8g2.nextPage() );
 }
