@@ -84,98 +84,91 @@ void initM41(struct Matrix4X1* m41,
   m41->m03 = a03;
 }
 
-///*
-//** Calculation Functions
-//*/
-//
-//Matrix4X4* Matrix4X4timesMatrix4X4(Matrix4X4* a, Matrix4X4* b){
-//  int m00 = (a->m00 * b->m00) + (a->m01*b->m10) + (a->m02*b->m20) + (a->m03*b->m30);
-//  int m01 = (a->m00 * b->m01) + (a->m01*b->m11) + (a->m02*b->m21) + (a->m03*b->m31);
-//  int m02 = (a->m00 * b->m02) + (a->m01*b->m12) + (a->m02*b->m22) + (a->m03*b->m32);
-//  int m03 = (a->m00 * b->m03) + (a->m01*b->m13) + (a->m02*b->m23) + (a->m03*b->m33);
-//           
-//  int m10 = (a->m10 * b->m00) + (a->m11*b->m10) + (a->m12*b->m20) + (a->m13*b->m30);
-//  int m11 = (a->m10 * b->m01) + (a->m11*b->m11) + (a->m12*b->m21) + (a->m13*b->m31);
-//  int m12 = (a->m10 * b->m02) + (a->m11*b->m12) + (a->m12*b->m22) + (a->m13*b->m32);
-//  int m13 = (a->m10 * b->m03) + (a->m11*b->m13) + (a->m12*b->m23) + (a->m13*b->m33);
-//           
-//  int m20 = (a->m20 * b->m00) + (a->m21*b->m10) + (a->m22*b->m20) + (a->m23*b->m30);
-//  int m21 = (a->m20 * b->m01) + (a->m21*b->m11) + (a->m22*b->m21) + (a->m23*b->m31);
-//  int m22 = (a->m20 * b->m02) + (a->m21*b->m12) + (a->m22*b->m22) + (a->m23*b->m32);
-//  int m23 = (a->m20 * b->m03) + (a->m21*b->m13) + (a->m22*b->m23) + (a->m23*b->m33);
-//           
-//  int m30 = (a->m30 * b->m00) + (a->m31*b->m10) + (a->m32*b->m20) + (a->m33*b->m30);
-//  int m31 = (a->m30 * b->m01) + (a->m31*b->m11) + (a->m32*b->m21) + (a->m33*b->m31);
-//  int m32 = (a->m30 * b->m02) + (a->m31*b->m12) + (a->m32*b->m22) + (a->m33*b->m32);
-//  int m33 = (a->m30 * b->m03) + (a->m31*b->m13) + (a->m32*b->m23) + (a->m33*b->m33);
-//
-//  return new Matrix4X4(m00, m01, m02, m03,
-//                       m10, m11, m12, m13,
-//                       m20, m21, m22, m23,
-//                       m30, m31, m32, m33);
-//}
-//
-//void showMatrix4X4(Matrix4X4* m){
-//  Serial.println("[");
-//  Serial.print(m->m00);
-//  Serial.print(",");
-//  Serial.print(m->m01);
-//  Serial.print(",");
-//  Serial.print(m->m02);
-//  Serial.print(",");
-//  Serial.print(m->m03);
-//  Serial.print(",\n");
-//
-//  Serial.print(m->m10);
-//  Serial.print(",");
-//  Serial.print(m->m11);
-//  Serial.print(",");
-//  Serial.print(m->m12);
-//  Serial.print(",");
-//  Serial.print(m->m13);
-//  Serial.print(",\n");
-//
-//  Serial.print(m->m20);
-//  Serial.print(",");
-//  Serial.print(m->m21);
-//  Serial.print(",");
-//  Serial.print(m->m22);
-//  Serial.print(",");
-//  Serial.print(m->m23);
-//  Serial.print(",\n");
-//
-//  Serial.print(m->m30);
-//  Serial.print(",");
-//  Serial.print(m->m31);
-//  Serial.print(",");
-//  Serial.print(m->m32);
-//  Serial.print(",");
-//  Serial.print(m->m33);
-//  Serial.print(",\n");
-//  Serial.println("]");
-//  Serial.print("\n");
-//}
-//
-//Matrix4X1* Matrix4X1timesMatrix4X4(Matrix4X1* a, Matrix4X4* b){
-//  int m00 = (a->m00 * b->m00) + (a->m01*b->m10) + (a->m02*b->m20) + (a->m03*b->m30);
-//  int m01 = (a->m00 * b->m01) + (a->m01*b->m11) + (a->m02*b->m21) + (a->m03*b->m31);
-//  int m02 = (a->m00 * b->m02) + (a->m01*b->m12) + (a->m02*b->m22) + (a->m03*b->m32);
-//  int m03 = (a->m00 * b->m03) + (a->m01*b->m13) + (a->m02*b->m23) + (a->m03*b->m33);
-//
-//  return new Matrix4X1(m00, m01, m02, m03);
-//}
-//
-//void showMatrix4X1(Matrix4X1* m){
-//  Serial.print("[");
-//  Serial.print(m->m00);
-//  Serial.print(",");
-//  Serial.print(m->m01);
-//  Serial.print(",");
-//  Serial.print(m->m02);
-//  Serial.print(",");
-//  Serial.print(m->m03);
-//  Serial.print("]\n");
-//}
+/*
+** Calculation Functions
+*/
+
+void M44timesM44(struct Matrix4X4* a, struct Matrix4X4* b, struct Matrix4X4* result){
+  result->m00 = (a->m00 * b->m00) + (a->m01*b->m10) + (a->m02*b->m20) + (a->m03*b->m30);
+  result->m01 = (a->m00 * b->m01) + (a->m01*b->m11) + (a->m02*b->m21) + (a->m03*b->m31);
+  result->m02 = (a->m00 * b->m02) + (a->m01*b->m12) + (a->m02*b->m22) + (a->m03*b->m32);
+  result->m03 = (a->m00 * b->m03) + (a->m01*b->m13) + (a->m02*b->m23) + (a->m03*b->m33);
+           
+  result->m10 = (a->m10 * b->m00) + (a->m11*b->m10) + (a->m12*b->m20) + (a->m13*b->m30);
+  result->m11 = (a->m10 * b->m01) + (a->m11*b->m11) + (a->m12*b->m21) + (a->m13*b->m31);
+  result->m12 = (a->m10 * b->m02) + (a->m11*b->m12) + (a->m12*b->m22) + (a->m13*b->m32);
+  result->m13 = (a->m10 * b->m03) + (a->m11*b->m13) + (a->m12*b->m23) + (a->m13*b->m33);
+           
+  result->m20 = (a->m20 * b->m00) + (a->m21*b->m10) + (a->m22*b->m20) + (a->m23*b->m30);
+  result->m21 = (a->m20 * b->m01) + (a->m21*b->m11) + (a->m22*b->m21) + (a->m23*b->m31);
+  result->m22 = (a->m20 * b->m02) + (a->m21*b->m12) + (a->m22*b->m22) + (a->m23*b->m32);
+  result->m23 = (a->m20 * b->m03) + (a->m21*b->m13) + (a->m22*b->m23) + (a->m23*b->m33);
+           
+  result->m30 = (a->m30 * b->m00) + (a->m31*b->m10) + (a->m32*b->m20) + (a->m33*b->m30);
+  result->m31 = (a->m30 * b->m01) + (a->m31*b->m11) + (a->m32*b->m21) + (a->m33*b->m31);
+  result->m32 = (a->m30 * b->m02) + (a->m31*b->m12) + (a->m32*b->m22) + (a->m33*b->m32);
+  result->m33 = (a->m30 * b->m03) + (a->m31*b->m13) + (a->m32*b->m23) + (a->m33*b->m33);
+}
+
+void M41timesM44(Matrix4X1* a, Matrix4X4* b, Matrix4X1* result){
+  result->m00 = (a->m00 * b->m00) + (a->m01*b->m10) + (a->m02*b->m20) + (a->m03*b->m30);
+  result->m01 = (a->m00 * b->m01) + (a->m01*b->m11) + (a->m02*b->m21) + (a->m03*b->m31);
+  result->m02 = (a->m00 * b->m02) + (a->m01*b->m12) + (a->m02*b->m22) + (a->m03*b->m32);
+  result->m03 = (a->m00 * b->m03) + (a->m01*b->m13) + (a->m02*b->m23) + (a->m03*b->m33);
+}
+
+void showM44(Matrix4X4* m){
+  Serial.println("[");
+  Serial.print(m->m00);
+  Serial.print(",");
+  Serial.print(m->m01);
+  Serial.print(",");
+  Serial.print(m->m02);
+  Serial.print(",");
+  Serial.print(m->m03);
+  Serial.print(",\n");
+
+  Serial.print(m->m10);
+  Serial.print(",");
+  Serial.print(m->m11);
+  Serial.print(",");
+  Serial.print(m->m12);
+  Serial.print(",");
+  Serial.print(m->m13);
+  Serial.print(",\n");
+
+  Serial.print(m->m20);
+  Serial.print(",");
+  Serial.print(m->m21);
+  Serial.print(",");
+  Serial.print(m->m22);
+  Serial.print(",");
+  Serial.print(m->m23);
+  Serial.print(",\n");
+
+  Serial.print(m->m30);
+  Serial.print(",");
+  Serial.print(m->m31);
+  Serial.print(",");
+  Serial.print(m->m32);
+  Serial.print(",");
+  Serial.print(m->m33);
+  Serial.print(",\n");
+  Serial.println("]");
+  Serial.print("\n");
+}
+
+void showM41(Matrix4X1* m){
+  Serial.print("[");
+  Serial.print(m->m00);
+  Serial.print(",");
+  Serial.print(m->m01);
+  Serial.print(",");
+  Serial.print(m->m02);
+  Serial.print(",");
+  Serial.print(m->m03);
+  Serial.print("]\n");
+}
 //
 ///*
 //** Structs
@@ -411,3 +404,24 @@ void initM41(struct Matrix4X1* m41,
 //  delete meshlist2d;
 //  firstFrame = false;
 //}
+
+void setup(){
+  Serial.begin(9600);
+  struct Matrix4X4 m44_1, m44_2, m44_result;
+  initM44(&m44_1,
+          1, 0, 0, 0,
+          0, 1, 0, 0,
+          0, 0, 1, 0,
+          0, 0, 0, 1);
+  initM44(&m44_2,
+          1, 0, 0, 0,
+          0, 1, 0, 0,
+          0, 0, 1, 0,
+          0, 0, 0, 1);
+  M44timesM44(&m44_1, &m44_2, &m44_result);
+  showM44(&m44_result);
+}
+
+void loop(){
+  ;
+}
