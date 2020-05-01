@@ -169,70 +169,72 @@ void showM41(Matrix4X1* m){
   Serial.print(m->m03);
   Serial.print("]\n");
 }
-//
-///*
-//** Structs
-//*/
-//
-//struct Camera{
-//  int x;
-//  int y;
-//  int z;
-//  int angleX;
-//  int angleY;
-//  int angleZ;
-//  int screenWidth;
-//  int screenHeight;
-//  Matrix4X4* rotationMatrix;
-//  
-//  Camera(int positionX, int positionY, int positionZ, int angleX, int angleY, int angleZ, int screenWidth, int screenHeight){
-//    this->x              = positionX;
-//    this->y              = positionY;
-//    this->z              = positionZ;
-//    this->angleX         = angleX;
-//    this->angleY         = angleY;
-//    this->angleZ         = angleZ;
-//    this->screenWidth    = screenWidth;
-//    this->screenHeight   = screenHeight;
-//  }
-//  void refreshRotationMatrix(){
-//    Matrix4X4* ZRotationMatrix = new Matrix4X4(cosd(this->angleZ),      sind(this->angleZ),     0,                        0,
-//                                               -1*sind(this->angleZ),   cosd(this->angleZ),     0,                        0,
-//                                               0,                        0,                       1,                        0,
-//                                               0,                        0,                       0,                        1);
-//    
-//    Matrix4X4* YRotationMatrix = new Matrix4X4(cosd(this->angleY),      0,                       -1*sind(this->angleY),   0,
-//                                               0,                        1,                       0,                        0,
-//                                               sind(this->angleY),      0,                       cosd(this->angleY),      0,
-//                                               0,                        0,                       0,                        1);
-//    
-//    Matrix4X4* XRotationMatrix = new Matrix4X4(1,                        0,                       0,                        0,
-//                                               0,                        cosd(this->angleX),     sind(this->angleX),      0,
-//                                               0,                        -1*sind(this->angleX),  cosd(this->angleX),      0,
-//                                               0,                        0,                       0,                        1);
-//    
-//    delete this->rotationMatrix;
-//    Matrix4X4* ZYMatrix  = Matrix4X4timesMatrix4X4(ZRotationMatrix, YRotationMatrix);
-//    Matrix4X4* ZYXMatrix = Matrix4X4timesMatrix4X4(ZYMatrix, XRotationMatrix);
-//    this->rotationMatrix = ZYXMatrix;
-//    delete ZRotationMatrix;
-//    delete YRotationMatrix;
-//    delete XRotationMatrix;
-//    delete ZYMatrix;
-//  }
-//};
-//
-//
-//
-//struct Vector2D{
-//  int x;
-//  int y;
-//  Vector2D(int x, int y){
-//    this->x = x;
-//    this->y = y;
-//  }
-//};
-//
+
+/*
+** Structs
+*/
+
+struct Matrix4X4 ZRotationMatrix, YRotationMatrix, XRotationMatrix, ZYRotationMatrix;
+
+struct Camera{
+  int    x;
+  int    y;
+  int    z;
+  int    angleX;
+  int    angleY;
+  int    angleZ;
+  int    screenWidth;
+  int    screenHeight;
+  struct Matrix4X4 rotationMatrix;
+};
+
+
+void initCamera(struct Camera* cam, int positionX, int positionY, int positionZ, int angleX, int angleY, int angleZ, int screenWidth, int screenHeight){
+  cam->x              = positionX;
+  cam->y              = positionY;
+  cam->z              = positionZ;
+  cam->angleX         = angleX;
+  cam->angleY         = angleY;
+  cam->angleZ         = angleZ;
+  cam->screenWidth    = screenWidth;
+  cam->screenHeight   = screenHeight;
+}
+
+void refreshRotationMatrix(struct Camera* cam){
+  initM44(&ZRotationMatrix,
+          cosd(cam->angleZ),       sind(cam->angleZ),     0,                        0,
+          -1*sind(cam->angleZ),    cosd(cam->angleZ),     0,                        0,
+          0,                       0,                     1,                        0,
+          0,                       0,                     0,                        1);
+  
+  initM44(&YRotationMatrix,
+          cosd(cam->angleY),       0,                     -1*sind(cam->angleY),     0,
+          0,                       1,                     0,                        0,
+          sind(cam->angleY),       0,                     cosd(cam->angleY),        0,
+          0,                       0,                     0,                        1);
+  
+  initM44(&XRotationMatrix,
+          1,                       0,                     0,                        0,
+          0,                       cosd(cam->angleX),     sind(cam->angleX),        0,
+          0,                       -1*sind(cam->angleX),  cosd(cam->angleX),        0,
+          0,                       0,                     0,                        1);
+
+  M44timesM44(&ZRotationMatrix,  &YRotationMatrix, &ZYRotationMatrix);
+  M44timesM44(&ZYRotationMatrix, &XRotationMatrix, &(cam->rotationMatrix));
+}
+
+
+
+struct Vector2D{
+  int x;
+  int y;
+};
+
+void initVector2D(struct Vector2D* v2d, int x, int y){
+  v2d->x = x;
+  v2d->y = y;
+}
+
 //struct Mesh2D{
 //  Vector2D* vec1;
 //  Vector2D* vec2;
@@ -248,19 +250,21 @@ void showM41(Matrix4X1* m){
 //    delete this->vec3;
 //  }
 //};
-//
-//struct Vector4D{
-//  int x;
-//  int y;
-//  int z;
-//  int w = 1;
-//  Vector4D(int x,int y,int z){
-//    this->x = x;
-//    this->y = y;
-//    this->z = z;
-//  }
-//};
-//
+
+struct Vector4D{
+  int x;
+  int y;
+  int z;
+  int w;
+};
+
+void initVector4D(struct Vector4D* v4d, int x, int y, int z){
+  v4d->x = x;
+  v4d->y = y;
+  v4d->z = z;
+  v4d->w = 1;
+}
+
 //struct Mesh4D{
 //  Vector4D* vec1;
 //  Vector4D* vec2;
@@ -276,22 +280,22 @@ void showM41(Matrix4X1* m){
 //    delete this->vec3;
 //  }
 //};
-//
-///*
-//** Canvas Functions
-//*/
-//
+
+/*
+** Canvas Functions
+*/
+
 //void CanvasDrawVector2D(struct Vector2D* vector){
 //  LcdFill(vector->x-1, //Start X Position
 //          vector->y-1, //Start Y Position
 //          2,          //Width
 //          2);         //Height
 //}
-//
+
 //void CanvasDrawMesh2D(struct Mesh2D* mesh){
-//  if(mesh->vec1->x == -1 || mesh->vec2->x == -1 || mesh->vec3->x == -1){
-//    return; //don't show this vector
-//  }
+//  //if(mesh->vec1->x == -1 || mesh->vec2->x == -1 || mesh->vec3->x == -1){
+//  //  return; //don't show this vector
+//  //}
 //  CanvasDrawVector2D(mesh->vec1);
 //  CanvasDrawVector2D(mesh->vec2);
 //  CanvasDrawVector2D(mesh->vec3);
@@ -300,11 +304,11 @@ void showM41(Matrix4X1* m){
 //  LcdDrawLine(mesh->vec2->x, mesh->vec2->y, mesh->vec3->x, mesh->vec3->y);
 //  LcdDrawLine(mesh->vec3->x, mesh->vec3->y, mesh->vec1->x, mesh->vec1->y);
 //}
-//
-///*
-//** Projection Functions
-//*/
-//
+
+/*
+** Projection Functions
+*/
+
 //Vector2D* Vector4D2Vector2D(struct Camera* camera,struct Vector4D* vector){
 //  int zoom  = 1;
 //  int zfix  = 0.01;
@@ -333,20 +337,25 @@ void showM41(Matrix4X1* m){
 //                    Vector4D2Vector2D(camera, mesh4d->vec2),
 //                    Vector4D2Vector2D(camera, mesh4d->vec3));
 //}
-//
-//Camera* cam1;
-//int listlen = 8;
+
+struct Camera cam1;
+int listlen = 8;
 //Mesh4D** meshlist = new Mesh4D* [listlen];
-//
-//void setup() {
-//  // put your setup code here, to run once:
-//  LcdInit();
-//  cam1 = new Camera(0,0,0,0,0,0,128,64);
-//  u8g2.firstPage();
-//  do {
-//    u8g2.setFont(u8g2_font_ncenB14_tr);
-//    u8g2.drawStr(0,15,"Setup");
-//  } while ( u8g2.nextPage() );
+
+void setup() {
+  
+  //Initialize the SSD1306 screen
+  u8g2.begin();
+
+  //initialize the camera
+  initCamera(&cam1, 0, 0, 0, 0, 0, 0, 128, 64);
+  
+  u8g2.firstPage();
+  do {
+    u8g2.setFont(u8g2_font_ncenB14_tr);
+    u8g2.drawStr(0,15,"Setup");
+  } while ( u8g2.nextPage() );
+  
 //  meshlist[0] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(1,4,1)); //front
 //  meshlist[1] = new Mesh4D(new Vector4D(1,4,1), new Vector4D(4,4,1), new Vector4D(4,1,1)); //front
 //  meshlist[2] = new Mesh4D(new Vector4D(1,4,4), new Vector4D(1,1,4), new Vector4D(1,1,1)); //left
@@ -360,8 +369,8 @@ void showM41(Matrix4X1* m){
 ////  meshlist[10] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(1,1,4), new Vector4D(4,1,4)); //down
 ////  meshlist[11] = new Mesh4D(new Vector4D(1,1,1), new Vector4D(4,1,1), new Vector4D(4,1,4)); //down
 //  delay(500);
-//}
-//
+}
+
 //bool firstFrame = true;
 //
 //void loop() {
@@ -405,23 +414,27 @@ void showM41(Matrix4X1* m){
 //  firstFrame = false;
 //}
 
-void setup(){
-  Serial.begin(9600);
-  struct Matrix4X4 m44_1, m44_2, m44_result;
-  initM44(&m44_1,
-          1, 0, 0, 0,
-          0, 1, 0, 0,
-          0, 0, 1, 0,
-          0, 0, 0, 1);
-  initM44(&m44_2,
-          1, 0, 0, 0,
-          0, 1, 0, 0,
-          0, 0, 1, 0,
-          0, 0, 0, 1);
-  M44timesM44(&m44_1, &m44_2, &m44_result);
-  showM44(&m44_result);
-}
+//void setup(){
+//  Serial.begin(9600);
+//  struct Matrix4X4 m44_1, m44_2, m44_result;
+//  initM44(&m44_1,
+//          1, 0, 0, 0,
+//          0, 1, 0, 0,
+//          0, 0, 1, 0,
+//          0, 0, 0, 1);
+//  initM44(&m44_2,
+//          1, 0, 0, 0,
+//          0, 1, 0, 0,
+//          0, 0, 1, 0,
+//          0, 0, 0, 1);
+//  M44timesM44(&m44_1, &m44_2, &m44_result);
+//  showM44(&m44_result);
+//}
 
 void loop(){
-  ;
+  u8g2.firstPage();
+  do {
+    u8g2.setFont(u8g2_font_ncenB14_tr);
+    u8g2.drawStr(0,15,"Setup");
+  } while ( u8g2.nextPage() );
 }
