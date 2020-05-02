@@ -349,6 +349,38 @@ void loop(){
     cam1.x += 0.2;
     cam1.z -= 0.2;
   }
+  
+
+  joytmp = getJoystickState(&joystickB);
+  if(joytmp == JOY_UP){
+    cam1.angleX -= 2;
+  }
+  else if(joytmp == JOY_DOWN){
+    cam1.angleX += 2;
+  }
+  else if(joytmp == JOY_LEFT){
+    cam1.angleY += 2;
+  }
+  else if(joytmp == JOY_RIGHT){
+    cam1.angleY -= 2;
+  }
+  else if(joytmp == JOY_LEFTUP){
+    cam1.angleY += 2;
+    cam1.angleX -= 2;
+  }
+  else if(joytmp == JOY_RIGHTUP){
+    cam1.angleY -= 2;
+    cam1.angleX -= 2;
+  }
+  else if(joytmp == JOY_LEFTDOWN){
+    cam1.angleY += 2;
+    cam1.angleX += 2;
+  }
+  else if(joytmp == JOY_RIGHTDOWN){
+    cam1.angleY -= 2;
+    cam1.angleX += 2;
+  }
+  
 
   refreshRotationMatrix(&cam1);
   for(int i = 0; i < V4DLIST_LEN; i++){
