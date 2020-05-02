@@ -5,6 +5,7 @@
 #include "Joystick.h"
 #include "MemoryFree.h"
 
+#define pgm_read_float_near(address_short) __LPM_float((uint16_t)(address_short))
 
 #define cosd(x) cos(x*0.017453293)
 #define sind(x) sin(x*0.017453293)
@@ -27,19 +28,19 @@
 #define JOY_Y_B           A0
 #define JOY_BTN_B         10
 
-const int V4DList[V4DLIST_LEN * 3] PROGMEM = {
-  1,1,1, 4,1,1, 1,4,1, //front
-  1,4,1, 4,4,1, 4,1,1, //front
-  1,4,4, 1,1,4, 1,1,1, //left
-  1,4,4, 1,4,1, 1,1,1, //left
-  4,4,4, 4,1,4, 4,1,1, //right
-  4,4,4, 4,4,1, 4,1,1, //right
-  1,1,4, 4,1,4, 1,4,4, //back
-  1,4,4, 4,4,4, 4,1,4, //back
-  1,4,1, 1,4,4, 4,4,4, //up
-  1,4,1, 4,4,1, 4,4,4, //up
-  1,1,1, 1,1,4, 4,1,4, //down
-  1,1,1, 4,1,1, 4,1,4  //down
+const float V4DList[V4DLIST_LEN * 3] PROGMEM = {
+  1.0, 1.0, 1.0,  4.0, 1.0, 1.0,  1.0, 4.0, 1.0,  //front
+  1.0, 4.0, 1.0,  4.0, 4.0, 1.0,  4.0, 1.0, 1.0,  //front
+  1.0, 4.0, 4.0,  1.0, 1.0, 4.0,  1.0, 1.0, 1.0,  //left
+  1.0, 4.0, 4.0,  1.0, 4.0, 1.0,  1.0, 1.0, 1.0,  //left
+  4.0, 4.0, 4.0,  4.0, 1.0, 4.0,  4.0, 1.0, 1.0,  //right
+  4.0, 4.0, 4.0,  4.0, 4.0, 1.0,  4.0, 1.0, 1.0,  //right
+  1.0, 1.0, 4.0,  4.0, 1.0, 4.0,  1.0, 4.0, 4.0,  //back
+  1.0, 4.0, 4.0,  4.0, 4.0, 4.0,  4.0, 1.0, 4.0,  //back
+  1.0, 4.0, 1.0,  1.0, 4.0, 4.0,  4.0, 4.0, 4.0,  //up
+  1.0, 4.0, 1.0,  4.0, 4.0, 1.0,  4.0, 4.0, 4.0,  //up
+  1.0, 1.0, 1.0,  1.0, 1.0, 4.0,  4.0, 1.0, 4.0,  //down
+  1.0, 1.0, 1.0,  4.0, 1.0, 1.0,  4.0, 1.0, 4.0  //down
 };
 
 
@@ -50,32 +51,32 @@ U8G2_SSD1306_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* 
 */
 
 struct Matrix4X4{
-  int m00;
-  int m01;
-  int m02;
-  int m03;
+  float m00;
+  float m01;
+  float m02;
+  float m03;
 
-  int m10;
-  int m11;
-  int m12;
-  int m13;
+  float m10;
+  float m11;
+  float m12;
+  float m13;
 
-  int m20;
-  int m21;
-  int m22;
-  int m23;
+  float m20;
+  float m21;
+  float m22;
+  float m23;
 
-  int m30;
-  int m31;
-  int m32;
-  int m33;
+  float m30;
+  float m31;
+  float m32;
+  float m33;
 };
 
 void initM44(struct Matrix4X4* m44,
-             int a00, int a01, int a02, int a03,
-             int a10, int a11, int a12, int a13,
-             int a20, int a21, int a22, int a23,
-             int a30, int a31, int a32, int a33)
+             float a00, float a01, float a02, float a03,
+             float a10, float a11, float a12, float a13,
+             float a20, float a21, float a22, float a23,
+             float a30, float a31, float a32, float a33)
 {
   m44->m00 = a00;
   m44->m01 = a01;
@@ -99,14 +100,14 @@ void initM44(struct Matrix4X4* m44,
 }
 
 struct Matrix4X1{
-  int m00;
-  int m01;
-  int m02;
-  int m03;
+  float m00;
+  float m01;
+  float m02;
+  float m03;
 };
 
 void initM41(struct Matrix4X1* m41,
-             int a00, int a01, int a02, int a03)
+             float a00, float a01, float a02, float a03)
 {
   m41->m00 = a00;
   m41->m01 = a01;
@@ -207,19 +208,19 @@ void showM41(Matrix4X1* m){
 struct Matrix4X4 ZRotationMatrix, YRotationMatrix, XRotationMatrix, ZYRotationMatrix;
 
 struct Camera{
-  int    x;
-  int    y;
-  int    z;
-  int    angleX;
-  int    angleY;
-  int    angleZ;
+  float    x;
+  float    y;
+  float    z;
+  float    angleX;
+  float    angleY;
+  float    angleZ;
   int    screenWidth;
   int    screenHeight;
   struct Matrix4X4 rotationMatrix;
 };
 
 
-void initCamera(struct Camera* cam, int positionX, int positionY, int positionZ, int angleX, int angleY, int angleZ, int screenWidth, int screenHeight){
+void initCamera(struct Camera* cam, float positionX, float positionY, float positionZ, float angleX, float angleY, float angleZ, int screenWidth, int screenHeight){
   cam->x              = positionX;
   cam->y              = positionY;
   cam->z              = positionZ;
@@ -260,93 +261,42 @@ void refreshRotationMatrix(struct Camera* cam){
 struct Matrix4X1 tmpCameraPositionMatrix, final;
 
 void Vector4D2Vector2D(struct Camera* camera, int v4dx, int v4dy, int v4dz, char* v2dx, char* v2dy){
-//  tmp = "";
-//  tmp += "v4dx:";
-//  tmp += v4dx;
-//  tmp += "v4dy:";
-//  tmp += v4dy;
-//  tmp += "v4dz:";
-//  tmp += v4dz;
-//  Serial.println(tmp);
-  
+  Serial.println(v4dx);
   float zoom  = 0.15;
   float zfix  = 0.01;
   initM41(&tmpCameraPositionMatrix,
           v4dx - camera->x, v4dy - camera->y, v4dz - camera->z, 1);
-
-//  tmp = "";
-//  tmp += "v4dx:";
-//  tmp += v4dx - camera->x;
-//  tmp += "v4dy:";
-//  tmp += v4dy - camera->y;
-//  tmp += "v4dz:";
-//  tmp += v4dz - camera->z;
-//  Serial.println(tmp);
   
   M41timesM44(&tmpCameraPositionMatrix, &(camera->rotationMatrix), &final);
-
-//  tmp = "final<";
-//  tmp += "v4dx:";
-//  tmp += final.m00;
-//  tmp += "v4dy:";
-//  tmp += final.m01;
-//  tmp += "v4dz:";
-//  tmp += final.m02;
-//  tmp += ">";
-//  Serial.println(tmp);
 
   float x2d = (float) ((float)(final.m00)) / ((float)final.m02*(float)zfix);
   float y2d = (float) ((float)(final.m01)) / ((float)final.m02*(float)zfix);
 
-//  tmp = "2d<";
-//  tmp += "x2d=";
-//  tmp += "(";
-//  tmp += final.m00;
-//  tmp += ") / (";
-//  tmp += final.m02;
-//  tmp += "*";
-//  tmp += zfix;
-//  tmp += ") = ";
-//  tmp += x2d;
-//  tmp += ">";
-//  Serial.println(tmp);
-
   *v2dx = (char)(   ((float)camera->screenWidth  / (float)2) + ((float)x2d * (float)zoom)   );
   *v2dy = (char)(   ((float)camera->screenHeight / (float)2) + ((float)y2d * (float)zoom)   );
-    
-    
-//  tmp = "v<";
-//  tmp += " v2dx:";
-//  tmp += (int)*v2dx;
-//  tmp += " v2dy:";
-//  tmp += (int)*v2dy;
-//  tmp += " >";
-//  Serial.println(tmp);
-
-//  Serial.println(((float)camera->screenWidth  / (float)2) + ((float)x2d * (float)zoom));
 }
 
 struct Camera cam1;
 char V2DList[V4DLIST_LEN * 2];
 int  V2DList_next = 0;
 
-bool V4DListAvailable(int* V4DList_next)
-{
-  if((*(V4DList_next) + 9) < V4DLIST_MAX)
-  {
-    return true;
-  }
-  else{
-    Serial.println("V4DList Overflowed!!!");
-    u8g2.firstPage();
-    do {
-      u8g2.setFont(u8g2_font_ncenB14_tr);
-      u8g2.drawStr(0,15,"V4DList Overflowed!!!");
-    } while ( u8g2.nextPage() );
-    delay(500);
-    return false;
-  }
-}
+//bool V4DListAvailable(int* V4DList_next)
+//{
+//  if((*(V4DList_next) + 9) < V4DLIST_MAX)
+//  {
+//    return true;
+//  }
+//  else{
+//    Serial.println("V4DList Overflowed!!!");
+//    u8g2.firstPage();
+//    do {
+//      u8g2.setFont(u8g2_font_ncenB14_tr);
+//      u8g2.drawStr(0,15,"V4DList Overflowed!!!");
+//    } while ( u8g2.nextPage() );
+//    delay(500);
+//    return false;
+//  }
+//}
 
 struct RGBLight rgblight;
 struct Joystick joystickA, joystickB;
@@ -360,6 +310,10 @@ void setup() {
   initJoystick(&joystickA, JOY_X_A, JOY_Y_A, JOY_BTN_A, true, false);
   initJoystick(&joystickB, JOY_X_B, JOY_Y_B, JOY_BTN_B, true, false);
   initCamera(&cam1, 2, 2, -1, 0, 0, 0, 128, 64);
+
+  for(int i = 0; i < V4DLIST_LEN*3; i++){
+    Serial.println(pgm_read_dword(V4DList + i));
+  }
 }
 
 
@@ -368,50 +322,43 @@ void loop(){
   
   joytmp = getJoystickState(&joystickA);
   if(joytmp == JOY_UP){
-    cam1.z += 1;
-    delay(300);
+    cam1.z += 0.2;
   }
   else if(joytmp == JOY_DOWN){
-    cam1.z -= 1;
-    delay(300);
+    cam1.z -= 0.2;
   }
   else if(joytmp == JOY_LEFT){
-    cam1.x -= 1;
-    delay(300);
+    cam1.x -= 0.2;
   }
   else if(joytmp == JOY_RIGHT){
-    cam1.x += 1;
-    delay(300);
+    cam1.x += 0.2;
   }
   else if(joytmp == JOY_LEFTUP){
-    cam1.x -= 1;
-    cam1.z += 1;
+    cam1.x -= 0.2;
+    cam1.z += 0.2;
   }
   else if(joytmp == JOY_RIGHTUP){
-    cam1.x += 1;
-    cam1.z += 1;
+    cam1.x += 0.2;
+    cam1.z += 0.2;
   }
   else if(joytmp == JOY_LEFTDOWN){
-    cam1.x -= 1;
-    cam1.z -= 1;
+    cam1.x -= 0.2;
+    cam1.z -= 0.2;
   }
   else if(joytmp == JOY_RIGHTDOWN){
-    cam1.x += 1;
-    cam1.z -= 1;
+    cam1.x += 0.2;
+    cam1.z -= 0.2;
   }
 
   refreshRotationMatrix(&cam1);
   for(int i = 0; i < V4DLIST_LEN; i++){
     Vector4D2Vector2D(&cam1,
-                      pgm_read_word(V4DList + (i*3+0)), pgm_read_word(V4DList + (i*3+1)), pgm_read_word(V4DList + (i*3+2)),
+                      pgm_read_float_near(V4DList + (i*3+0)), pgm_read_float_near(V4DList + (i*3+1)), pgm_read_float_near(V4DList + (i*3+2)),
                       &(V2DList[i*2+0]), &(V2DList[i*2+1])
                      );
   }
   u8g2.firstPage();
   do {
-//    for(int i = 0; i < V4DLIST_LEN; i++){
-//      u8g2.drawBox((int)(V2DList[i*2+0]), (int)(V2DList[i*2+1]), 3, 3);
-//    }
     for(int i = 0; i < V4DLIST_LEN / 3; i++){
       u8g2.drawLine((int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]), (int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]));
       u8g2.drawLine((int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]), (int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]));
