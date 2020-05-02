@@ -263,7 +263,7 @@ struct Matrix4X1 tmpCameraPositionMatrix, final;
 void Vector4D2Vector2D(struct Camera* camera, int v4dx, int v4dy, int v4dz, char* v2dx, char* v2dy){
   Serial.println(v4dx);
   float zoom  = 0.15;
-  float zfix  = 0.01;
+  float zfix  = 0.003;
   initM41(&tmpCameraPositionMatrix,
           v4dx - camera->x, v4dy - camera->y, v4dz - camera->z, 1);
   
