@@ -258,7 +258,7 @@ void refreshRotationMatrix(struct Camera* cam){
 
 struct Matrix4X1 tmpCameraPositionMatrix, final;
 
-void Vector4D2Vector2D(struct Camera* camera, int v4dx, int v4dy, int v4dz, char* v2dx, char* v2dy){
+void Vector4D2Vector2D(struct Camera* camera, int v4dx, int v4dy, int v4dz, int* v2dx, int* v2dy){
   float zoom  = 0.15;
   float zfix  = 0.003;
   initM41(&tmpCameraPositionMatrix,
@@ -269,8 +269,9 @@ void Vector4D2Vector2D(struct Camera* camera, int v4dx, int v4dy, int v4dz, char
   float x2d = (float) ((float)(final.m00)) / ((float)final.m02*(float)zfix);
   float y2d = (float) ((float)(final.m01)) / ((float)final.m02*(float)zfix);
 
-  *v2dx = (char)(   ((float)camera->screenWidth  / (float)2) + ((float)x2d * (float)zoom)   );
-  *v2dy = (char)(   ((float)camera->screenHeight / (float)2) + ((float)y2d * (float)zoom)   );
+  *v2dx = (int)(   ((float)camera->screenWidth  / (float)2) + ((float)x2d * (float)zoom)   );
+  *v2dy = (int)(   ((float)camera->screenHeight / (float)2) + ((float)y2d * (float)zoom)   );
+  Serial.println(*v2dx);
 }
 
 
@@ -286,7 +287,7 @@ Rectangle rect;
 
 /* Structure about 3D processing */
 struct Camera cam1;
-char V2DList[V4DLIST_LEN * 2];
+unsigned int V2DList[V4DLIST_LEN * 2];
 int  V2DList_next = 0;
 
 
@@ -297,7 +298,7 @@ void setup() {
   initRGB(&rgblight, 11, 10, 9);
   initJoystick(&joystickA, JOY_X_A, JOY_Y_A, JOY_BTN_A, true, false);
   initJoystick(&joystickB, JOY_X_B, JOY_Y_B, JOY_BTN_B, true, false);
-  initRectangle(&rect, 0, 0, 64, 64);
+  initRectangle(&rect, 0, 0, 128, 64);
   initCamera(&cam1, 2, 2, -1, 0, 0, 0, 128, 64);
 }
 
@@ -384,6 +385,10 @@ void loop(){
       LineClip(DrawLineCallback, &rect, (int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]) + 1, (int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]) + 1);
       LineClip(DrawLineCallback, &rect, (int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]) + 1, (int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]) + 1);
       LineClip(DrawLineCallback, &rect, (int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]) + 1, (int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]) + 1);
+      
+//      if(i == 2){
+//        Serial.println((int)&(V2DList[(i*3+0)*2+0]));
+//      }
     }
   } while ( u8g2.nextPage() );
 
