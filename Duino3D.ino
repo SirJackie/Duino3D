@@ -259,7 +259,6 @@ void refreshRotationMatrix(struct Camera* cam){
 struct Matrix4X1 tmpCameraPositionMatrix, final;
 
 void Vector4D2Vector2D(struct Camera* camera, int v4dx, int v4dy, int v4dz, char* v2dx, char* v2dy){
-  Serial.println(v4dx);
   float zoom  = 0.15;
   float zfix  = 0.003;
   initM41(&tmpCameraPositionMatrix,
@@ -298,12 +297,8 @@ void setup() {
   initRGB(&rgblight, 11, 10, 9);
   initJoystick(&joystickA, JOY_X_A, JOY_Y_A, JOY_BTN_A, true, false);
   initJoystick(&joystickB, JOY_X_B, JOY_Y_B, JOY_BTN_B, true, false);
-  initRectangle(&rect, 0, 0, 128, 64);
+  initRectangle(&rect, 0, 0, 64, 64);
   initCamera(&cam1, 2, 2, -1, 0, 0, 0, 128, 64);
-  
-  for(int i = 0; i < V4DLIST_LEN*3; i++){
-    Serial.println(pgm_read_dword(V4DList + i));
-  }
 }
 
 
