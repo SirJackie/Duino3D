@@ -1,9 +1,8 @@
-String tmp = "";
-
 /* External Libraries Including */
 #include <U8g2lib.h>
 #include <avr/pgmspace.h>
-#include "Buttons.h"
+#include "Light.h"
+#include "Joystick.h"
 #include "MemoryFree.h"
 
 
@@ -17,6 +16,16 @@ String tmp = "";
 #define V4DLIST_LEN  36
 #define V4DLIST_MAX  300
 #define V2DLIST_MAX  32
+
+/* Joystick Pins */
+
+#define JOY_X_A           A3
+#define JOY_Y_A           A2
+#define JOY_BTN_A         11
+
+#define JOY_X_B           A1
+#define JOY_Y_B           A0
+#define JOY_BTN_B         10
 
 const int V4DList[V4DLIST_LEN * 3] PROGMEM = {
   1,1,1, 4,1,1, 1,4,1, //front
@@ -339,51 +348,56 @@ bool V4DListAvailable(int* V4DList_next)
   }
 }
 
-
+struct RGBLight rgblight;
+struct Joystick joystickA, joystickB;
 
 void setup() {
   
   //Initialize
   Serial.begin(9600);
   u8g2.begin();
-  initButtons();
+  initRGB(&rgblight, 11, 10, 9);
+  initJoystick(&joystickA, JOY_X_A, JOY_Y_A, JOY_BTN_A, true, false);
+  initJoystick(&joystickB, JOY_X_B, JOY_Y_B, JOY_BTN_B, true, false);
   initCamera(&cam1, 2, 2, -1, 0, 0, 0, 128, 64);
-
-//  //Display String
-//  u8g2.firstPage();
-//  do {
-//    u8g2.setFont(u8g2_font_ncenB14_tr);
-//    u8g2.drawStr(0,15,"Setup");
-//  } while ( u8g2.nextPage() );
-//  delay(500);
-//
-////  //Print Vector4D Data
-////  for(int i = 0; i < V4DLIST_LEN; i++){
-////    Serial.println(pgm_read_word(V4DList + i));
-////  }
-//  delay(500);
 }
 
 
-char bstmp;
+char joytmp;
 void loop(){
-  bstmp = getButtonState();
-  Serial.println((int)bstmp);
-  if(bstmp == BTN_UP){
+  
+  joytmp = getJoystickState(&joystickA);
+  if(joytmp == JOY_UP){
     cam1.z += 1;
     delay(300);
   }
-  else if(bstmp == BTN_DOWN){
+  else if(joytmp == JOY_DOWN){
     cam1.z -= 1;
     delay(300);
   }
-  else if(bstmp == BTN_LEFT){
+  else if(joytmp == JOY_LEFT){
     cam1.x -= 1;
     delay(300);
   }
-  else if(bstmp == BTN_RIGHT){
+  else if(joytmp == JOY_RIGHT){
     cam1.x += 1;
     delay(300);
+  }
+  else if(joytmp == JOY_LEFTUP){
+    cam1.x -= 1;
+    cam1.z += 1;
+  }
+  else if(joytmp == JOY_RIGHTUP){
+    cam1.x += 1;
+    cam1.z += 1;
+  }
+  else if(joytmp == JOY_LEFTDOWN){
+    cam1.x -= 1;
+    cam1.z -= 1;
+  }
+  else if(joytmp == JOY_RIGHTDOWN){
+    cam1.x += 1;
+    cam1.z -= 1;
   }
 
   refreshRotationMatrix(&cam1);
@@ -393,76 +407,23 @@ void loop(){
                       &(V2DList[i*2+0]), &(V2DList[i*2+1])
                      );
   }
-
-//  for(int i = 0; i < V4DLIST_LEN * 2; i++){
-//    Serial.println(V2DList[i]);
-//  }
-  
-  //Draw Meshes
-  for(int i = 0; i < V4DLIST_LEN; i++){
-      Vector4D2Vector2D(&cam1,
-                        pgm_read_word(V4DList + (i*3+0)), pgm_read_word(V4DList + (i*3+1)), pgm_read_word(V4DList + (i*3+2)),
-                        &(V2DList[i*2+0]), &(V2DList[i*2+1])
-                       );
-  }
   u8g2.firstPage();
   do {
-    for(int i = 0; i < V4DLIST_LEN; i++){
-      u8g2.drawBox((int)(V2DList[i*2+0]), (int)(V2DList[i*2+1]), 3, 3);
-    }
+//    for(int i = 0; i < V4DLIST_LEN; i++){
+//      u8g2.drawBox((int)(V2DList[i*2+0]), (int)(V2DList[i*2+1]), 3, 3);
+//    }
     for(int i = 0; i < V4DLIST_LEN / 3; i++){
       u8g2.drawLine((int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]), (int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]));
       u8g2.drawLine((int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]), (int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]));
       u8g2.drawLine((int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]), (int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]));
+
+      u8g2.drawLine((int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]) + 1, (int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]) + 1);
+      u8g2.drawLine((int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]) + 1, (int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]) + 1);
+      u8g2.drawLine((int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]) + 1, (int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]) + 1);
     }
   } while ( u8g2.nextPage() );
 
-//  for(int i = 0; i < listlen; i++){
-//    delete meshlist2d[i];
-//  }
-//  delete meshlist2d;
-//  firstFrame = false;
+  updateRGB(&rgblight);
+  updateRGB(&rgblight);
+  updateRGB(&rgblight);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//void pushMesh4D(char** V4DList, int* V4DList_next, char v1x, char v1y, char v1z, char v2x, char v2y, char v2z, char v3x, char v3y, char v3z)
-//{
-//  if(!V4DListAvailable(V4DList_next)){
-//    return;
-//  }
-//  (*V4DList)[*V4DList_next] = v1x;
-//  (*V4DList_next)++;
-//  (*V4DList)[*V4DList_next] = v1y;
-//  (*V4DList_next)++;
-//  (*V4DList)[*V4DList_next] = v1z;
-//  (*V4DList_next)++;
-//
-//  (*V4DList)[*V4DList_next] = v2x;
-//  (*V4DList_next)++;
-//  (*V4DList)[*V4DList_next] = v2y;
-//  (*V4DList_next)++;
-//  (*V4DList)[*V4DList_next] = v2z;
-//  (*V4DList_next)++;
-//
-//  (*V4DList)[*V4DList_next] = v3x;
-//  (*V4DList_next)++;
-//  (*V4DList)[*V4DList_next] = v3y;
-//  (*V4DList_next)++;
-//  (*V4DList)[*V4DList_next] = v3z;
-//  (*V4DList_next)++;
-//}
