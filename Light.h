@@ -1,5 +1,5 @@
-#ifndef LIGHT_LIGHT_H_
-#define LIGHT_LIGHT_H_
+#ifndef LIGHT_H_
+#define LIGHT_H_
 
 struct RGBLight{
   int  i, rPin, gPin, bPin;

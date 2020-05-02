@@ -3,6 +3,7 @@
 #include <avr/pgmspace.h>
 #include "Light.h"
 #include "Joystick.h"
+#include "LineClip.h"
 #include "MemoryFree.h"
 
 #define pgm_read_float_near(address_short) __LPM_float((uint16_t)(address_short))
@@ -42,9 +43,6 @@ const float V4DList[V4DLIST_LEN * 3] PROGMEM = {
   1.0, 1.0, 1.0,  1.0, 1.0, 4.0,  4.0, 1.0, 4.0,  //down
   1.0, 1.0, 1.0,  4.0, 1.0, 1.0,  4.0, 1.0, 4.0  //down
 };
-
-
-U8G2_SSD1306_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 16, /* data=*/ 17);
 
 /*
 ** Calculation Structs
@@ -276,41 +274,33 @@ void Vector4D2Vector2D(struct Camera* camera, int v4dx, int v4dy, int v4dz, char
   *v2dy = (char)(   ((float)camera->screenHeight / (float)2) + ((float)y2d * (float)zoom)   );
 }
 
+
+
+/* Structure about hardware */
+U8G2_SSD1306_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE, /* clock=*/ 16, /* data=*/ 17);
+inline void DrawLineCallback(int* x0, int* y0, int* x1, int* y1){
+  u8g2.drawLine(*x0, *y0, *x1, *y1);
+}
+struct RGBLight rgblight;
+struct Joystick joystickA, joystickB;
+Rectangle rect;
+
+/* Structure about 3D processing */
 struct Camera cam1;
 char V2DList[V4DLIST_LEN * 2];
 int  V2DList_next = 0;
 
-//bool V4DListAvailable(int* V4DList_next)
-//{
-//  if((*(V4DList_next) + 9) < V4DLIST_MAX)
-//  {
-//    return true;
-//  }
-//  else{
-//    Serial.println("V4DList Overflowed!!!");
-//    u8g2.firstPage();
-//    do {
-//      u8g2.setFont(u8g2_font_ncenB14_tr);
-//      u8g2.drawStr(0,15,"V4DList Overflowed!!!");
-//    } while ( u8g2.nextPage() );
-//    delay(500);
-//    return false;
-//  }
-//}
-
-struct RGBLight rgblight;
-struct Joystick joystickA, joystickB;
 
 void setup() {
-  
   //Initialize
   Serial.begin(9600);
   u8g2.begin();
   initRGB(&rgblight, 11, 10, 9);
   initJoystick(&joystickA, JOY_X_A, JOY_Y_A, JOY_BTN_A, true, false);
   initJoystick(&joystickB, JOY_X_B, JOY_Y_B, JOY_BTN_B, true, false);
+  initRectangle(&rect, 0, 0, 128, 64);
   initCamera(&cam1, 2, 2, -1, 0, 0, 0, 128, 64);
-
+  
   for(int i = 0; i < V4DLIST_LEN*3; i++){
     Serial.println(pgm_read_dword(V4DList + i));
   }
@@ -322,63 +312,63 @@ void loop(){
   
   joytmp = getJoystickState(&joystickA);
   if(joytmp == JOY_UP){
-    cam1.z += 0.2;
+    cam1.z += 0.4;
   }
   else if(joytmp == JOY_DOWN){
-    cam1.z -= 0.2;
+    cam1.z -= 0.4;
   }
   else if(joytmp == JOY_LEFT){
-    cam1.x -= 0.2;
+    cam1.x -= 0.4;
   }
   else if(joytmp == JOY_RIGHT){
-    cam1.x += 0.2;
+    cam1.x += 0.4;
   }
   else if(joytmp == JOY_LEFTUP){
-    cam1.x -= 0.2;
-    cam1.z += 0.2;
+    cam1.x -= 0.4;
+    cam1.z += 0.4;
   }
   else if(joytmp == JOY_RIGHTUP){
-    cam1.x += 0.2;
-    cam1.z += 0.2;
+    cam1.x += 0.4;
+    cam1.z += 0.4;
   }
   else if(joytmp == JOY_LEFTDOWN){
-    cam1.x -= 0.2;
-    cam1.z -= 0.2;
+    cam1.x -= 0.4;
+    cam1.z -= 0.4;
   }
   else if(joytmp == JOY_RIGHTDOWN){
-    cam1.x += 0.2;
-    cam1.z -= 0.2;
+    cam1.x += 0.4;
+    cam1.z -= 0.4;
   }
   
 
   joytmp = getJoystickState(&joystickB);
   if(joytmp == JOY_UP){
-    cam1.angleX -= 2;
+    cam1.angleX -= 4;
   }
   else if(joytmp == JOY_DOWN){
-    cam1.angleX += 2;
+    cam1.angleX += 4;
   }
   else if(joytmp == JOY_LEFT){
-    cam1.angleY += 2;
+    cam1.angleY += 4;
   }
   else if(joytmp == JOY_RIGHT){
-    cam1.angleY -= 2;
+    cam1.angleY -= 4;
   }
   else if(joytmp == JOY_LEFTUP){
-    cam1.angleY += 2;
-    cam1.angleX -= 2;
+    cam1.angleY += 4;
+    cam1.angleX -= 4;
   }
   else if(joytmp == JOY_RIGHTUP){
-    cam1.angleY -= 2;
-    cam1.angleX -= 2;
+    cam1.angleY -= 4;
+    cam1.angleX -= 4;
   }
   else if(joytmp == JOY_LEFTDOWN){
-    cam1.angleY += 2;
-    cam1.angleX += 2;
+    cam1.angleY += 4;
+    cam1.angleX += 4;
   }
   else if(joytmp == JOY_RIGHTDOWN){
-    cam1.angleY -= 2;
-    cam1.angleX += 2;
+    cam1.angleY -= 4;
+    cam1.angleX += 4;
   }
   
 
@@ -392,13 +382,13 @@ void loop(){
   u8g2.firstPage();
   do {
     for(int i = 0; i < V4DLIST_LEN / 3; i++){
-      u8g2.drawLine((int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]), (int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]));
-      u8g2.drawLine((int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]), (int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]));
-      u8g2.drawLine((int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]), (int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]));
+      LineClip(DrawLineCallback, &rect, (int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]), (int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]));
+      LineClip(DrawLineCallback, &rect, (int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]), (int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]));
+      LineClip(DrawLineCallback, &rect, (int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]), (int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]));
 
-      u8g2.drawLine((int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]) + 1, (int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]) + 1);
-      u8g2.drawLine((int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]) + 1, (int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]) + 1);
-      u8g2.drawLine((int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]) + 1, (int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]) + 1);
+      LineClip(DrawLineCallback, &rect, (int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]) + 1, (int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]) + 1);
+      LineClip(DrawLineCallback, &rect, (int)(V2DList[(i*3+1)*2+0]), (int)(V2DList[(i*3+1)*2+1]) + 1, (int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]) + 1);
+      LineClip(DrawLineCallback, &rect, (int)(V2DList[(i*3+2)*2+0]), (int)(V2DList[(i*3+2)*2+1]) + 1, (int)(V2DList[(i*3+0)*2+0]), (int)(V2DList[(i*3+0)*2+1]) + 1);
     }
   } while ( u8g2.nextPage() );
 
