@@ -2,6 +2,10 @@
 
 我的Canvas3D引擎在Arduino上的移植品。
 
+# 电路图
+
+![CircuitDiagram](./CircuitDiagram.png)
+
 # 关于开源协议
 
 仓库中Duino3D本身(Duino3D.ino和Drivers文件夹)，以及通过该程序衍生得产品，如Demo视频，均属于开源软件，遵守GNU通用公共许可证，即GNU GPL。
